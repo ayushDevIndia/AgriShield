@@ -181,4 +181,6 @@ The model architectures were trained on a balanced agricultural corn-field weed 
 - **Nut Sedge** (*Cyperus rotundus*)
 - **Healthy Corn** (*Zea mays*)
 
-*Researchers can refer to standard open agronomy catalogs (such as Kaggle Agricultural Weed Datasets) to acquire high-resolution plant imagery.*
+*The original weed and crop datasets are hosted publicly on GitHub. Researchers and students can download and reference the raw agronomy imagery from the official repository:*
+👉 **[zhangchuanyin/weed-datasets](https://github.com/zhangchuanyin/weed-datasets)**
+
