@@ -130,3 +130,55 @@ Since **Flask**, **TensorFlow**, **NumPy**, and **Pillow** are already installed
       }
     }
     ```
+
+---
+
+## 🚀 Cloning & Running AgriShield from GitHub
+
+If a peer, teacher, or researcher clones this repository, they can get the application up and running instantly using these simple steps:
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/ayushDevIndia/AgriShield.git
+cd AgriShield
+```
+
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Launch the Server
+```bash
+python3 app.py
+```
+*Open your browser and navigate to `http://127.0.0.1:8000` to start using the system.*
+
+---
+
+## 📊 Dataset & Model Weights Guide
+
+To keep the GitHub repository clean and within file size limits, the large deep learning model weights (`.h5` files) are excluded via `.gitignore`. 
+
+### How to Run the App (Choose your Mode):
+
+#### Mode A: Out of the Box (Intelligent Fallback Mode)
+- **Zero Configuration Needed!** 
+- If the repository is cloned and run without `.h5` files on disk, the system's **Intelligent Vision Fallback Engine** automatically boots up. 
+- It loads a standard pre-trained MobileNetV2 network, extracts botanical features combined with HSV color histograms, and runs a realistic, responsive prediction flow. This allows anyone to test and experience the full responsive chat UI, scanner animation, and report generations instantly!
+
+#### Mode B: Custom Deep Learning Mode (Real Trained Weights)
+- To run the exact custom neural networks trained in the Jupyter notebooks:
+  1. Download the custom trained Keras weights (`DenseNet.h5`, `InceptionV3.h5`, `LNet.h5`, `Inception_ResNet_v2.h5`, `Untitled65.h5`).
+  2. Place these `.h5` weight files directly inside the **`models/`** directory.
+  3. Re-run `python3 app.py`. The Flask server will automatically detect the weights and switch to pure deep learning inference mode!
+
+### 🌾 Agronomy Dataset Source:
+The model architectures were trained on a balanced agricultural corn-field weed dataset, containing **5 distinct plant categories** (approximately 1,200 high-resolution leaf images per category):
+- **Annual Bluegrass** (*Poa annua*)
+- **White Goosefoot** (*Chenopodium album*)
+- **Field Thistle** (*Cirsium setosum*)
+- **Nut Sedge** (*Cyperus rotundus*)
+- **Healthy Corn** (*Zea mays*)
+
+*Researchers can refer to standard open agronomy catalogs (such as Kaggle Agricultural Weed Datasets) to acquire high-resolution plant imagery.*
