@@ -1,0 +1,21 @@
+# Python Caches
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Deep Learning Weight Files (Excluded due to GitHub 100MB file limit)
+models/*.h5
+models/*.keras
+
+# Log files
+*.log
+flask_server.log
+tunnel.log
+nohup.out

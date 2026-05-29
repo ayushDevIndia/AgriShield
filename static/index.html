@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriShield | ChatGPT-style Weed Diagnosis</title>
+    <!-- Google Fonts for Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Premium Stylesheet -->
+    <link rel="stylesheet" href="/style.css">
+    <!-- Frontend JS logic (DEFER tag added to resolve loading) -->
+    <script src="/app.js" defer></script>
+</head>
+<body>
+    <div class="chat-app-container">
+        
+        <!-- SIDEBAR BACKDROP OVERLAY FOR MOBILE -->
+        <div class="sidebar-mobile-backdrop" id="sidebar-backdrop"></div>
+        
+        <!-- SIDEBAR (Collapsible, dark background like ChatGPT) -->
+        <aside class="chat-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="new-diagnosis-btn">
+                    <i class="fa-solid fa-plus"></i> New Diagnosis
+                </button>
+                <button class="sidebar-toggle-btn" id="close-sidebar-btn" title="Close Sidebar">
+                    <i class="fa-solid fa-angles-left"></i>
+                </button>
+            </div>
+            
+            <!-- Chat History / Previous scans list -->
+            <div class="sidebar-history-container">
+                <span class="history-label">Recent Diagnosis Scans</span>
+                <div class="history-list" id="history-scans-list">
+                    <!-- Dynamic scan items loaded by JS -->
+                    <div class="history-item empty">
+                        <i class="fa-solid fa-message-medical"></i> No recent scans
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Bottom Profile / Theme toggle -->
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">AY</div>
+                    <div class="user-info">
+                        <span class="username">Scholar AY</span>
+                        <span class="user-role">PHD Research Division</span>
+                    </div>
+                </div>
+                <button class="footer-action-btn" id="theme-toggle" title="Toggle Dark/Light Mode">
+                    <i class="fa-solid fa-sun"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CHAT CONTAINER -->
+        <main class="chat-main-viewport" id="chat-viewport">
+            
+            <!-- Drag & Drop Floating Overlay -->
+            <div class="drag-drop-overlay" id="drag-drop-overlay" style="display: none;">
+                <div class="drag-drop-box">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <h3>Drop Leaf Specimen here to Scan</h3>
+                    <p>Supports PNG, JPG, or JPEG images</p>
+                </div>
+            </div>
+            
+            <!-- TOP CONTROLS ROW -->
+            <header class="chat-top-header">
+                <div class="header-left">
+                    <button class="sidebar-open-btn" id="open-sidebar-btn" title="Open Sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <!-- ChatGPT-style model switcher dropdown -->
+                    <div class="model-dropdown-container">
+                        <button class="model-dropdown-trigger" id="model-dropdown-btn">
+                            <span class="model-trigger-name" id="active-model-name">LeafNet (L-Net) + CBAM</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div class="model-dropdown-menu" id="model-dropdown-menu">
+                            <!-- Dynamic Model options rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="system-status" id="system-status-indicator">
+                        <span class="status-dot pulsing"></span>
+                        <span class="status-text">Connecting...</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CHAT CONVERSATION VIEWPORT -->
+            <div class="chat-feed-container" id="chat-feed">
+                
+                <!-- Center Welcome Screen (When feed is empty) -->
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="welcome-logo">
+                        <i class="fa-solid fa-leaf animate-pulse"></i>
+                    </div>
+                    <h2>How can AgriShield help you today?</h2>
+                    <p>Upload a crop leaf specimen image or capture a snapshot. The deep learning core will run real-time CBAM-augmented classification to diagnose corn health and invasive weeds.</p>
+                    
+                    
+                    <!-- Suggesion cards -->
+                    <div class="suggestion-grid">
+                        <div class="suggestion-card" data-action="upload-corn">
+                            <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
+                            <div>
+                                <h4>Analyze Zea mays</h4>
+                                <p>Scan a healthy corn leaf specimen.</p>
+                            </div>
+                        </div>
+                        <div class="suggestion-card" data-action="upload-weed">
+                            <div class="card-icon"><i class="fa-solid fa-spider"></i></div>
+                            <div>
+                                <h4>Identify Broadleaf Weed</h4>
+                                <p>Diagnose White Goosefoot or Thistle.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages thread -->
+                <div class="message-thread" id="message-thread" style="display: none;">
+                    <!-- Message items dynamically populated by JS -->
+                </div>
+            </div>
+
+            <!-- CHAT BOTTOM PANEL (Pill Input box like ChatGPT) -->
+            <footer class="chat-input-panel">
+                <div class="input-container-box">
+                    
+                    <!-- Image upload thumbnail preview (above the input pill when selected) -->
+                    <div class="selected-image-preview-bar" id="selected-image-bar" style="display: none;">
+                        <div class="preview-thumbnail-box">
+                            <img id="input-image-thumbnail" src="" alt="Thumbnail">
+                            <div class="scanning-laser-line" id="active-laser-line"></div>
+                            <button class="remove-thumbnail-btn" id="clear-selected-image" title="Remove specimen"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <span class="preview-filename-text" id="selected-filename">specimen.jpg</span>
+                    </div>
+                    
+                    <!-- Web camera capture preview overlay (inside main area) -->
+                    <div class="camera-stream-overlay" id="camera-overlay" style="display: none;">
+                        <div class="camera-viewport-box">
+                            <video id="camera-stream" autoplay playsinline></video>
+                            <canvas id="camera-canvas" style="display: none;"></canvas>
+                            <div class="camera-frame-guide"></div>
+                            <div class="camera-floating-controls">
+                                <button class="camera-act-btn" id="capture-snapshot-btn" title="Snap Specimen Image"><i class="fa-solid fa-circle-dot"></i></button>
+                                <button class="camera-act-btn close" id="close-camera-btn" title="Close Camera Feed"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Pill -->
+                    <div class="input-pill-bar">
+                        <input type="file" id="file-input" accept="image/*" style="display: none;">
+                        
+                        <!-- Attachment Paperclip -->
+                        <button class="pill-utility-btn" id="attach-file-btn" title="Upload Leaf Image">
+                            <i class="fa-solid fa-paperclip"></i>
+                        </button>
+                        
+                        <!-- Camera Button -->
+                        <button class="pill-utility-btn" id="open-camera-btn" title="Take Leaf Photo">
+                            <i class="fa-solid fa-camera"></i>
+                        </button>
+
+                        <div class="pill-text-area-box">
+                            <input type="text" id="chat-text-input" placeholder="Upload crop leaf image and click send..." readonly>
+                        </div>
+
+                        <!-- Send Button -->
+                        <button class="pill-send-btn" id="send-diagnosis-btn" disabled>
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="academic-note-text">
+                    AgriShield is built for PHD agronomy research. Model predictions run purely in-memory and represent simulated metrics based on model checkpoints.
+                </div>
+            </footer>
+        </main>
+    </div>
+</body>
+</html>
