@@ -268,6 +268,73 @@ def run_intelligent_vision_fallback(image, model_id):
     """
     return classify_specimen_heuristics(image)
 
+def is_valid_leaf_specimen(image):
+    """
+    Botanical Specimen Verification Gate:
+    Verifies if the uploaded image is a genuine plant/crop/leaf specimen.
+    Accurately rejects out-of-distribution non-leaf images (human selfies, cars, furniture,
+    documents, animals, artificial graphics, etc.) before running classification.
+    """
+    try:
+        # Resize for fast, uniform processing
+        img_rgb = image.convert("RGB").resize((128, 128))
+        arr = np.array(img_rgb, dtype=np.float32)
+        r, g, b = arr[:,:,0], arr[:,:,1], arr[:,:,2]
+        
+        # 1. Botanical Vegetation Indices
+        # Excess Green Index: ExG = 2G - R - B (Widely accepted in agronomy & drone scouting)
+        exg = 2.0 * g - r - b
+        
+        # Normalized Difference Green-Red Index: NGRDI = (G - R) / (G + R + 1e-5)
+        ngrdi = (g - r) / (g + r + 1e-5)
+        
+        # 2. HSV Color Space Analysis
+        hsv = img_rgb.convert("HSV")
+        h_arr = np.array(hsv.split()[0], dtype=np.float32) # In PIL: 0-255 (maps to 0-360 deg)
+        s_arr = np.array(hsv.split()[1], dtype=np.float32)
+        v_arr = np.array(hsv.split()[2], dtype=np.float32)
+        
+        # Genuine chlorophyll green foliage:
+        # Hue: ~42 deg to 158 deg (PIL scale: 30 to 112)
+        # Saturation >= 25, Value >= 25, ExG > 8, NGRDI > 0.03
+        green_foliage = (h_arr >= 30) & (h_arr <= 114) & (s_arr >= 25) & (v_arr >= 25) & (exg > 8.0) & (ngrdi > 0.03)
+        
+        # Organic dry / yellow-green weed foliage (e.g., sedge stem, cirsium pale spines):
+        # Hue: 18 to 30, Saturation >= 35, Value >= 35, (G > B + 12)
+        yellow_foliage = (h_arr >= 18) & (h_arr < 30) & (s_arr >= 35) & (v_arr >= 35) & (g > b + 12.0) & (exg > -8.0)
+        
+        plant_mask = green_foliage | yellow_foliage
+        plant_pixel_count = np.sum(plant_mask)
+        plant_ratio = float(plant_pixel_count) / float(plant_mask.size)
+        
+        # 3. Spatial Coherence & Natural Biological Texture
+        if plant_pixel_count > 50:
+            plant_float = plant_mask.astype(np.float32)
+            pad = np.pad(plant_float, 1, mode="constant")
+            neighbors = (
+                pad[:-2, :-2] + pad[:-2, 1:-1] + pad[:-2, 2:] +
+                pad[1:-1, :-2] + pad[1:-1, 1:-1] + pad[1:-1, 2:] +
+                pad[2:, :-2] + pad[2:, 1:-1] + pad[2:, 2:]
+            )
+            core_leaf_pixels = np.sum((plant_mask) & (neighbors >= 5.0))
+            cluster_ratio = float(core_leaf_pixels) / float(plant_mask.size)
+            green_std = float(np.std(g[plant_mask]))
+        else:
+            cluster_ratio = 0.0
+            green_std = 0.0
+            
+        # Decision rules:
+        if plant_ratio < 0.10 or cluster_ratio < 0.05:
+            return False, "No crop or weed leaf foliage detected. The uploaded image appears to be a non-leaf object."
+            
+        if green_std < 4.5:
+            return False, "Synthetic or artificial color detected. Please upload an authentic photograph of a plant or weed leaf."
+            
+        return True, "Valid leaf specimen"
+    except Exception as e:
+        print(f"Warning in leaf validation: {e}")
+        return True, "Validation bypassed"
+
 # ============================================================
 # API ROUTES
 # ============================================================
@@ -295,6 +362,18 @@ def predict():
         # Process image STRICTLY in-memory
         image_bytes = file.read()
         image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        
+        # Specimen Verification Gate: Reject non-leaf images
+        is_leaf, validation_reason = is_valid_leaf_specimen(image)
+        if not is_leaf:
+            print(f"Specimen verification rejected for {model_id}: {validation_reason}")
+            return jsonify({
+                "success": False,
+                "is_leaf": False,
+                "error": "Non-Leaf Specimen Detected",
+                "message": validation_reason,
+                "suggestion": "Please upload a clear photograph of a crop leaf (corn) or weed specimen."
+            }), 200
         
         # Check if custom compiled model weight file exists
         model_filename = f"{model_id}.h5"

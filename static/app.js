@@ -366,6 +366,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (result.success) {
                 appendAIDiagnosisReport(result, modelToRun);
                 saveDiagnosisToHistory(result, modelToRun, imageUrlData);
+            } else if (result.is_leaf === false) {
+                appendSpecimenRejectionMessage(result, modelToRun);
             } else {
                 appendSimpleAIMessage(`Error running TensorFlow inference: ${result.error}`, modelToRun);
             }
@@ -445,6 +447,46 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `;
         
+        messageThread.appendChild(bubble);
+    }
+
+    function appendSpecimenRejectionMessage(result, modelId) {
+        const bubble = document.createElement("div");
+        bubble.className = "message-bubble ai";
+
+        bubble.innerHTML = `
+            <div class="bubble-avatar" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="bubble-content">
+                <div class="nested-report-card specimen-rejection-card">
+                    <div class="nested-report-header" style="border-bottom: 1px solid rgba(239, 68, 68, 0.25);">
+                        <h3 style="color: #ef4444;"><i class="fa-solid fa-circle-xmark"></i> Specimen Rejected: Non-Leaf Image</h3>
+                        <span class="report-badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">${modelId} Gate</span>
+                    </div>
+                    
+                    <div class="nested-report-body" style="gap: 12px; padding: 16px;">
+                        <div class="rejection-alert-banner">
+                            <i class="fa-solid fa-ban"></i>
+                            <div>
+                                <strong>${result.error || "Non-Leaf Specimen Detected"}</strong>
+                                <p>${result.message || "No plant foliage or chlorophyll characteristics detected in the uploaded specimen."}</p>
+                            </div>
+                        </div>
+
+                        <div class="nested-advisor-box" style="background: rgba(239, 68, 68, 0.05); border-left: 3px solid #ef4444; margin-top: 10px;">
+                            <div class="nested-advisor-item">
+                                <h4 style="color: #ef4444;">Agronomy Specimen Constraint:</h4>
+                                <p>${modelId} and AgriShield are trained exclusively to diagnose agricultural crop specimens (Corn / Zea mays) and invasive field weeds (Bluegrass, Chenopodium, Cirsium, Sedge). Images of humans, animals, objects, rooms, or documents are rejected to maintain strict scientific accuracy.</p>
+                            </div>
+                            <div class="nested-advisor-item" style="margin-top: 8px;">
+                                <h4 style="color: var(--accent-color);">Required Action:</h4>
+                                <p>${result.suggestion || "Please upload an authentic photograph of a crop leaf or weed specimen."}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
         messageThread.appendChild(bubble);
     }
 
