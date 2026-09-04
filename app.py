@@ -268,68 +268,103 @@ def run_intelligent_vision_fallback(image, model_id):
     """
     return classify_specimen_heuristics(image)
 
+NON_PLANT_KEYWORDS = {
+    "person", "man", "woman", "suit", "vest", "sunglass", "sunglasses", "coat",
+    "shirt", "jersey", "jean", "dress", "t-shirt", "apparel", "uniform", "tie",
+    "car", "truck", "automobile", "vehicle", "motorcycle", "bicycle",
+    "dog", "cat", "bird", "horse", "bear", "animal",
+    "phone", "laptop", "computer", "screen", "monitor", "keyboard",
+    "desk", "chair", "table", "couch", "sofa", "wall", "room", "building"
+}
+
+# ImageNet model for deep specimen validation (loaded lazily)
+imagenet_validator_model = None
+
+def get_imagenet_validator():
+    global imagenet_validator_model
+    if imagenet_validator_model is None:
+        try:
+            imagenet_validator_model = tf.keras.applications.MobileNetV2(weights="imagenet")
+        except Exception as e:
+            print(f"ImageNet validator initialization notice: {e}")
+    return imagenet_validator_model
+
 def is_valid_leaf_specimen(image):
     """
-    Botanical Specimen Verification Gate:
-    Verifies if the uploaded image is a genuine plant/crop/leaf specimen.
-    Accurately rejects out-of-distribution non-leaf images (human selfies, cars, furniture,
-    documents, animals, artificial graphics, etc.) before running classification.
+    Botanical Specimen Verification Gate (Triple-Shield Protection):
+    1. Biometric Human Skin / Portrait Detection
+    2. Living Plant Chlorophyll Spectrum & Reflectance (rejects green clothing/walls)
+    3. Deep Learning ImageNet Object Verification
     """
     try:
         # Resize for fast, uniform processing
-        img_rgb = image.convert("RGB").resize((128, 128))
-        arr = np.array(img_rgb, dtype=np.float32)
-        r, g, b = arr[:,:,0], arr[:,:,1], arr[:,:,2]
+        img_rgb = image.convert("RGB")
+        arr_128 = np.array(img_rgb.resize((128, 128)), dtype=np.float32)
+        r, g, b = arr_128[:,:,0], arr_128[:,:,1], arr_128[:,:,2]
         
-        # 1. Botanical Vegetation Indices
-        # Excess Green Index: ExG = 2G - R - B (Widely accepted in agronomy & drone scouting)
+        # 1. BIOMETRIC HUMAN DETECTION (Peer & Kovac Skin Color Model)
+        skin_mask = (r > 95) & (g > 40) & (b > 20) & ((r - b) > 15) & ((r - g) > 12) & (r > g) & (r > b)
+        skin_ratio = float(np.sum(skin_mask)) / float(skin_mask.size)
+        if skin_ratio > 0.04:
+            return False, "Human portrait or subject detected. AgriShield exclusively analyzes botanical crop and weed leaf specimens."
+        
+        # 2. LIVING PLANT CHLOROPHYLL REFLECTANCE (Rejects green fabric, walls, dark green clothes)
         exg = 2.0 * g - r - b
-        
-        # Normalized Difference Green-Red Index: NGRDI = (G - R) / (G + R + 1e-5)
         ngrdi = (g - r) / (g + r + 1e-5)
-        
-        # 2. HSV Color Space Analysis
-        hsv = img_rgb.convert("HSV")
-        h_arr = np.array(hsv.split()[0], dtype=np.float32) # In PIL: 0-255 (maps to 0-360 deg)
+        hsv = img_rgb.resize((128, 128)).convert("HSV")
+        h_arr = np.array(hsv.split()[0], dtype=np.float32)
         s_arr = np.array(hsv.split()[1], dtype=np.float32)
         v_arr = np.array(hsv.split()[2], dtype=np.float32)
         
-        # Genuine chlorophyll plant foliage:
-        # Chlorophyll reflects green light (550nm) while absorbing red and blue.
-        # G must strictly exceed R and B. In PIL scale: Hue 30 to 118 (maps to 42-165 deg).
-        green_foliage = (
-            (h_arr >= 30) & (h_arr <= 118) & 
-            (s_arr >= 25) & (v_arr >= 25) & 
-            (g > r + 2.0) & (g > b + 3.0) & 
-            (exg > 6.0) & (ngrdi > 0.02)
+        # Living vegetation has high green reflectance (G > 55, V > 48, G strictly exceeds R & B)
+        living_chlorophyll = (
+            (h_arr >= 30) & (h_arr <= 116) &
+            (s_arr >= 25) & (v_arr >= 48) &
+            (g > 55.0) & (g > r + 3.0) & (g > b + 4.0) &
+            (exg > 8.0) & (ngrdi > 0.02)
         )
         
-        plant_pixel_count = np.sum(green_foliage)
-        plant_ratio = float(plant_pixel_count) / float(green_foliage.size)
+        plant_pixel_count = np.sum(living_chlorophyll)
+        plant_ratio = float(plant_pixel_count) / float(living_chlorophyll.size)
         
-        # 3. Spatial Coherence & Natural Biological Texture
+        # Spatial Coherence & Natural Biological Texture
         if plant_pixel_count > 40:
-            plant_float = green_foliage.astype(np.float32)
+            plant_float = living_chlorophyll.astype(np.float32)
             pad = np.pad(plant_float, 1, mode="constant")
             neighbors = (
                 pad[:-2, :-2] + pad[:-2, 1:-1] + pad[:-2, 2:] +
                 pad[1:-1, :-2] + pad[1:-1, 1:-1] + pad[1:-1, 2:] +
                 pad[2:, :-2] + pad[2:, 1:-1] + pad[2:, 2:]
             )
-            core_leaf_pixels = np.sum((green_foliage) & (neighbors >= 5.0))
-            cluster_ratio = float(core_leaf_pixels) / float(green_foliage.size)
-            green_std = float(np.std(g[green_foliage]))
+            core_leaf_pixels = np.sum((living_chlorophyll) & (neighbors >= 5.0))
+            cluster_ratio = float(core_leaf_pixels) / float(living_chlorophyll.size)
+            green_std = float(np.std(g[living_chlorophyll]))
         else:
             cluster_ratio = 0.0
             green_std = 0.0
             
-        # Decision rules:
         if plant_ratio < 0.12 or cluster_ratio < 0.05:
             return False, "No crop or weed leaf foliage detected. The uploaded image appears to be a non-leaf object."
             
         if green_std < 4.5:
             return False, "Synthetic or artificial color detected. Please upload an authentic photograph of a plant or weed leaf."
             
+        # 3. DEEP LEARNING IMAGENET OBJECT VERIFICATION
+        validator = get_imagenet_validator()
+        if validator is not None:
+            try:
+                img_224 = img_rgb.resize((224, 224))
+                x = tf.keras.applications.mobilenet_v2.preprocess_input(np.array(img_224, dtype=np.float32)[np.newaxis, ...])
+                preds = validator.predict(x, verbose=0)
+                decoded = tf.keras.applications.mobilenet_v2.decode_predictions(preds, top=5)[0]
+                for _, label, prob in decoded:
+                    label_lower = label.lower()
+                    for kw in NON_PLANT_KEYWORDS:
+                        if kw in label_lower and prob > 0.15:
+                            return False, f"Non-agricultural object detected ({label.replace('_', ' ').title()}). AgriShield only analyzes crop and weed specimens."
+            except Exception:
+                pass
+                
         return True, "Valid leaf specimen"
     except Exception as e:
         print(f"Warning in leaf validation: {e}")
