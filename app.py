@@ -294,37 +294,37 @@ def is_valid_leaf_specimen(image):
         s_arr = np.array(hsv.split()[1], dtype=np.float32)
         v_arr = np.array(hsv.split()[2], dtype=np.float32)
         
-        # Genuine chlorophyll green foliage:
-        # Hue: ~42 deg to 158 deg (PIL scale: 30 to 112)
-        # Saturation >= 25, Value >= 25, ExG > 8, NGRDI > 0.03
-        green_foliage = (h_arr >= 30) & (h_arr <= 114) & (s_arr >= 25) & (v_arr >= 25) & (exg > 8.0) & (ngrdi > 0.03)
+        # Genuine chlorophyll plant foliage:
+        # Chlorophyll reflects green light (550nm) while absorbing red and blue.
+        # G must strictly exceed R and B. In PIL scale: Hue 30 to 118 (maps to 42-165 deg).
+        green_foliage = (
+            (h_arr >= 30) & (h_arr <= 118) & 
+            (s_arr >= 25) & (v_arr >= 25) & 
+            (g > r + 2.0) & (g > b + 3.0) & 
+            (exg > 6.0) & (ngrdi > 0.02)
+        )
         
-        # Organic dry / yellow-green weed foliage (e.g., sedge stem, cirsium pale spines):
-        # Hue: 18 to 30, Saturation >= 35, Value >= 35, (G > B + 12)
-        yellow_foliage = (h_arr >= 18) & (h_arr < 30) & (s_arr >= 35) & (v_arr >= 35) & (g > b + 12.0) & (exg > -8.0)
-        
-        plant_mask = green_foliage | yellow_foliage
-        plant_pixel_count = np.sum(plant_mask)
-        plant_ratio = float(plant_pixel_count) / float(plant_mask.size)
+        plant_pixel_count = np.sum(green_foliage)
+        plant_ratio = float(plant_pixel_count) / float(green_foliage.size)
         
         # 3. Spatial Coherence & Natural Biological Texture
-        if plant_pixel_count > 50:
-            plant_float = plant_mask.astype(np.float32)
+        if plant_pixel_count > 40:
+            plant_float = green_foliage.astype(np.float32)
             pad = np.pad(plant_float, 1, mode="constant")
             neighbors = (
                 pad[:-2, :-2] + pad[:-2, 1:-1] + pad[:-2, 2:] +
                 pad[1:-1, :-2] + pad[1:-1, 1:-1] + pad[1:-1, 2:] +
                 pad[2:, :-2] + pad[2:, 1:-1] + pad[2:, 2:]
             )
-            core_leaf_pixels = np.sum((plant_mask) & (neighbors >= 5.0))
-            cluster_ratio = float(core_leaf_pixels) / float(plant_mask.size)
-            green_std = float(np.std(g[plant_mask]))
+            core_leaf_pixels = np.sum((green_foliage) & (neighbors >= 5.0))
+            cluster_ratio = float(core_leaf_pixels) / float(green_foliage.size)
+            green_std = float(np.std(g[green_foliage]))
         else:
             cluster_ratio = 0.0
             green_std = 0.0
             
         # Decision rules:
-        if plant_ratio < 0.10 or cluster_ratio < 0.05:
+        if plant_ratio < 0.12 or cluster_ratio < 0.05:
             return False, "No crop or weed leaf foliage detected. The uploaded image appears to be a non-leaf object."
             
         if green_std < 4.5:
