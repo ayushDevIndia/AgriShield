@@ -523,8 +523,8 @@ def classify_specimen_heuristics(image, crop="Cotton"):
     s_arr = np.array(s, dtype=np.float32)
     v_arr = np.array(v, dtype=np.float32)
     
-    # Chlorophyll coverage (Hue: 25 to 105, Saturation > 18, Value > 20)
-    green_mask = (h_arr >= 25) & (h_arr <= 105) & (s_arr > 18) & (v_arr > 20) & (g >= r * 0.88)
+    # Chlorophyll coverage (Hue: 25 to 105, Saturation > 18, Value > 20, Green dominance over Red)
+    green_mask = (h_arr >= 25) & (h_arr <= 105) & (s_arr > 18) & (v_arr > 20) & (g > r * 1.01)
     green_ratio = np.sum(green_mask) / float(h_arr.size)
     
     # Whitish/gray mealy or pale green regions
@@ -545,7 +545,8 @@ def classify_specimen_heuristics(image, crop="Cotton"):
     mean_val = np.mean(green_vals) if len(green_vals) > 0 else 125.0
 
     # Red/succulent stem and leaf margins indicator (Purslane / Trianthema)
-    reddish_succulent_mask = (r > g * 1.05) & (r > b * 1.15) & (v_arr > 50)
+    # Calibrated to require vivid red saturation to avoid dry soil false triggers
+    reddish_succulent_mask = (r > g * 1.30) & (r > b * 1.30) & (s_arr > 60) & (v_arr > 60)
     red_ratio = np.sum(reddish_succulent_mask) / float(h_arr.size)
 
     # ----------------------------------------------------
@@ -554,50 +555,69 @@ def classify_specimen_heuristics(image, crop="Cotton"):
     if crop == "Cotton":
         scores = [1.0] * len(COTTON_CLASSES)
 
-        if green_ratio < 0.08:
+        if green_ratio < 0.05:
             return np.ones(len(COTTON_CLASSES)) / len(COTTON_CLASSES)
 
-        # 1. High Edge Density (Narrow linear grass blades, sedges, or bipinnate leaves)
-        if edge_density > 26.0:
-            if red_ratio > 0.04 or (mean_val < 85.0 and red_ratio > 0.02):
-                scores[10] += 5.5  # Purslane
-                scores[11] += 4.5  # Trianthema
-            elif mean_hue < 43.0:
-                scores[7] += 7.0   # Nutsedge (Cyperus)
-                scores[4] += 2.0   # Cynodon dactylon
-            elif edge_density > 34.0:
-                if gray_green_ratio > 0.20:
-                    scores[9] += 7.5  # Phyllanthus urinaria (Chamberbitter)
-                    scores[1] += 3.5  # Carpetweeds
+        is_sparse_seedling = (green_ratio < 0.35)
+
+        if is_sparse_seedling:
+            # Field weed seedling emergent on soil - predict weed species, not full cotton canopy
+            if edge_density > 20.0:
+                if mean_hue < 43.0:
+                    scores[7] += 7.0   # Nutsedge
+                    scores[4] += 5.0   # Cynodon dactylon
                 else:
-                    scores[4] += 7.0  # Cynodon dactylon (Bermuda grass)
-                    scores[5] += 3.0  # Echinochloa colona
+                    scores[4] += 7.5   # Cynodon dactylon (Bermuda grass)
+                    scores[5] += 5.0   # Echinochloa colona
+            elif red_ratio > 0.02:
+                scores[11] += 6.0  # Trianthema portulacastrum
+                scores[10] += 5.0  # Purslane
             else:
-                scores[5] += 6.5   # Echinochloa colona (Jungle Rice)
-                scores[4] += 3.0   # Cynodon dactylon
-                scores[7] += 2.0   # Nutsedge
+                scores[4] += 6.0   # Cynodon dactylon
+                scores[5] += 5.0   # Echinochloa colona
+                scores[0] += 3.0   # Amaranthus viridis
         else:
-            # 2. Moderate to Broad Leaves (Cotton crop, Amaranthus, Morning Glory, etc.)
-            if red_ratio > 0.035:
-                scores[11] += 6.5  # Trianthema portulacastrum (Horse Purslane)
-                scores[10] += 5.5  # Purslane
-            elif gray_green_ratio > 0.28:
-                scores[0] += 6.0   # Amaranthus viridis (Slender Amaranth)
-                scores[8] += 4.5   # PalmerAmaranth
-            elif mean_hue > 68.0:
-                scores[6] += 6.0   # Morningglory (Ipomoea)
-                scores[3] += 5.0   # Commelina benghalensis
-            elif mean_val > 135.0 and edge_density < 19.0:
-                scores[12] += 7.8  # cotton (Healthy Gossypium hirsutum)
-                scores[2] += 2.0   # Cleome gynandra
-            elif edge_density > 20.0 and edge_density <= 26.0:
-                scores[2] += 6.5   # Cleome gynandra (Spiderwisp)
-                scores[8] += 4.0   # PalmerAmaranth
-                scores[0] += 3.5   # Amaranthus viridis
+            # Established canopy foliage
+            if edge_density > 26.0:
+                if red_ratio > 0.04 or (mean_val < 85.0 and red_ratio > 0.02):
+                    scores[10] += 5.5  # Purslane
+                    scores[11] += 4.5  # Trianthema
+                elif mean_hue < 43.0:
+                    scores[7] += 7.0   # Nutsedge (Cyperus)
+                    scores[4] += 2.0   # Cynodon dactylon
+                elif edge_density > 34.0:
+                    if gray_green_ratio > 0.20:
+                        scores[9] += 7.5  # Phyllanthus urinaria (Chamberbitter)
+                        scores[1] += 3.5  # Carpetweeds
+                    else:
+                        scores[4] += 7.0  # Cynodon dactylon (Bermuda grass)
+                        scores[5] += 3.0  # Echinochloa colona
+                else:
+                    scores[5] += 6.5   # Echinochloa colona (Jungle Rice)
+                    scores[4] += 3.0   # Cynodon dactylon
+                    scores[7] += 2.0   # Nutsedge
             else:
-                scores[12] += 6.5  # cotton
-                scores[8] += 2.5   # PalmerAmaranth
-                scores[6] += 2.0   # Morningglory
+                # Moderate to Broad Leaves (Cotton crop, Amaranthus, Morning Glory, etc.)
+                if red_ratio > 0.035:
+                    scores[11] += 6.5  # Trianthema portulacastrum (Horse Purslane)
+                    scores[10] += 5.5  # Purslane
+                elif gray_green_ratio > 0.28:
+                    scores[0] += 6.0   # Amaranthus viridis (Slender Amaranth)
+                    scores[8] += 4.5   # PalmerAmaranth
+                elif mean_hue > 68.0:
+                    scores[6] += 6.0   # Morningglory (Ipomoea)
+                    scores[3] += 5.0   # Commelina benghalensis
+                elif mean_val > 135.0 and edge_density < 19.0:
+                    scores[12] += 7.8  # cotton (Healthy Gossypium hirsutum)
+                    scores[2] += 2.0   # Cleome gynandra
+                elif edge_density > 20.0 and edge_density <= 26.0:
+                    scores[2] += 6.5   # Cleome gynandra (Spiderwisp)
+                    scores[8] += 4.0   # PalmerAmaranth
+                    scores[0] += 3.5   # Amaranthus viridis
+                else:
+                    scores[12] += 6.5  # cotton
+                    scores[8] += 2.5   # PalmerAmaranth
+                    scores[6] += 2.0   # Morningglory
 
         exp_scores = np.exp(scores - np.max(scores))
         probabilities = exp_scores / np.sum(exp_scores)
@@ -609,9 +629,27 @@ def classify_specimen_heuristics(image, crop="Cotton"):
     else:
         scores = [1.0, 1.0, 1.0, 1.0, 1.0]
 
-        if green_ratio < 0.08:
-            scores = [1.0, 1.0, 1.0, 1.0, 1.0]
+        if green_ratio < 0.05:
+            return np.ones(5) / 5.0
+
+        is_sparse_seedling = (green_ratio < 0.35)
+
+        if is_sparse_seedling:
+            # Emergent weed seedling on soil - predict weed species, NEVER healthy corn crop!
+            if edge_density > 18.0:
+                if mean_hue < 45.0:
+                    scores[4] += 7.0  # sedge
+                    scores[0] += 4.0  # bluegrass
+                else:
+                    scores[0] += 7.5  # bluegrass
+                    scores[4] += 3.5  # sedge
+            elif gray_green_ratio > 0.22:
+                scores[1] += 6.5  # chenopodium album
+            else:
+                scores[0] += 6.0  # bluegrass
+                scores[2] += 4.0  # cirsium setosum
         else:
+            # Established full-leaf canopy
             if edge_density > 26.0:
                 if gray_green_ratio > 0.22:
                     scores[1] += 4.5  # Chenopodium
@@ -665,12 +703,13 @@ FOOD_AND_CULINARY_OBJECTS = [
 ]
 
 # 3. Animals & Wildlife
+# 3. Animals & Wildlife (Excludes snakes/reptiles/insects to prevent false positives from grassy weed blades in field dirt)
 ANIMAL_OBJECTS = [
     "dog", "cat", "bird", "horse", "cow", "sheep", "goat", "pig", "elephant", "bear",
     "lion", "tiger", "leopard", "cheetah", "wolf", "fox", "deer", "rabbit", "hare",
     "monkey", "ape", "chimpanzee", "gorilla", "fish", "shark", "whale", "dolphin",
-    "snake", "lizard", "turtle", "tortoise", "frog", "toad", "spider", "scorpion",
-    "duck", "goose", "swan", "chicken", "rooster", "hen", "turkey", "penguin", "ostrich"
+    "duck", "goose", "swan", "chicken", "rooster", "hen", "turkey", "penguin", "ostrich",
+    "golden_retriever", "labrador_retriever", "pug", "chihuahua", "persian_cat", "siamese_cat"
 ]
 
 # 4. Flower Blossoms (When flower head dominates without weed leaf structure)
@@ -740,23 +779,26 @@ def is_valid_leaf_specimen(image):
         arr_128 = np.array(img_rgb.resize((128, 128)), dtype=np.float32)
         r_128, g_128, b_128 = arr_128[:,:,0], arr_128[:,:,1], arr_128[:,:,2]
 
-        # Red/Pink fruit mask (Apples, Strawberries, Tomatoes, Pomegranates)
-        fruit_red_mask = (r_128 > g_128 * 1.15) & (r_128 > b_128 * 1.15) & (s_arr > 30) & (v_arr > 40)
+        # Vivid Red/Crimson fruit mask (Apples, Strawberries, Tomatoes, Pomegranates)
+        # Note: True red fruit exhibits saturated red hue (Hue <= 12 or >= 245), S >= 80, V >= 65, R > 1.30 * G
+        # Agricultural soil has hue 25-45 and low saturation (< 50), avoiding false triggers completely.
+        fruit_red_mask = ((h_arr <= 12) | (h_arr >= 245)) & (s_arr >= 80) & (v_arr >= 65) & (r_128 > g_128 * 1.30) & (r_128 > b_128 * 1.20)
         fruit_red_ratio = float(np.sum(fruit_red_mask)) / float(fruit_red_mask.size)
 
-        # Orange/Yellow citrus/mango fruit mask
-        fruit_orange_mask = (r_128 > 150) & (g_128 > 80) & (b_128 < 75) & (r_128 > g_128 * 1.08) & (s_arr > 45)
+        # Vivid Orange/Yellow citrus & mango fruit mask (High saturation orange/yellow produce)
+        fruit_orange_mask = (h_arr >= 12) & (h_arr <= 32) & (s_arr >= 165) & (v_arr >= 160) & (r_128 > g_128 * 1.15) & (r_128 > b_128 * 1.70)
         fruit_orange_ratio = float(np.sum(fruit_orange_mask)) / float(fruit_orange_mask.size)
 
-        if fruit_red_ratio > 0.12 or fruit_orange_ratio > 0.15:
-            detected_fruit_type = "Red Fruit / Apple / Tomato" if fruit_red_ratio > 0.12 else "Citrus / Yellow Fruit"
+        if fruit_red_ratio > 0.08 or fruit_orange_ratio > 0.12:
+            detected_fruit_type = "Red Fruit / Apple / Tomato" if fruit_red_ratio > 0.08 else "Citrus / Yellow Fruit"
             return False, f"Fruit or horticultural produce detected ({detected_fruit_type}). AgriShield is trained exclusively on crop leaf foliage and weeds, not fruits."
 
         # 3. LIVING BOTANICAL FOLIAGE PRESENCE
-        green_mask = (h_arr >= 25) & (h_arr <= 105) & (s_arr >= 18) & (v_arr >= 25) & (g_128 > r_128 * 0.85)
+        # True chlorophyll requires green channel dominance (g > r * 1.01)
+        green_mask = (h_arr >= 25) & (h_arr <= 105) & (s_arr >= 18) & (v_arr >= 20) & (g_128 > r_128 * 1.01)
         green_ratio = float(np.sum(green_mask)) / float(green_mask.size)
         
-        if green_ratio < 0.035:
+        if green_ratio < 0.025:
             return False, "No botanical foliage detected. Please upload a clear photograph of a cotton leaf, corn leaf, or field weed specimen."
 
         # 4. DEEP LEARNING IMAGENET OBJECT VERIFICATION
@@ -858,7 +900,7 @@ def predict():
         return jsonify({"success": False, "error": "No image file provided."}), 400
         
     file = request.files["image"]
-    model_id = request.form.get("model", "InceptionV3_Cotton_Mamba")
+    model_id = request.form.get("model") or request.form.get("model_id") or "InceptionV3_Cotton_Mamba"
     spec = get_model_spec(model_id)
     crop = spec.get("crop", "Cotton")
     class_names = COTTON_CLASSES if crop == "Cotton" else CORN_CLASSES
