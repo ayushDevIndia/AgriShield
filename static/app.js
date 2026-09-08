@@ -734,7 +734,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="nested-report-card">
                     <div class="nested-report-header">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <img src="/igu_seal.png" alt="IGU Seal" style="width: 22px; height: 22px; border-radius: 50%; object-fit: contain; box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);">
+                            <img src="/igu_seal.png?v=2" alt="IGU Seal" style="width: 22px; height: 22px; border-radius: 50%; object-fit: contain; box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);">
                             <h3>Agri-Scan Diagnostics</h3>
                         </div>
                         <div style="display: flex; gap: 6px; align-items: center;">
