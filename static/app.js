@@ -579,18 +579,36 @@ document.addEventListener("DOMContentLoaded", () => {
         const bubble = document.createElement("div");
         bubble.className = "message-bubble ai";
 
+        const msgText = (result.message || "").toLowerCase();
+        let iconHtml = '<i class="fa-solid fa-ban"></i>';
+        let cardTitle = "Specimen Rejected: Non-Leaf Image";
+
+        if (msgText.includes("fruit") || msgText.includes("apple") || msgText.includes("citrus") || msgText.includes("produce") || msgText.includes("ear") || msgText.includes("cob")) {
+            iconHtml = '<i class="fa-solid fa-apple-whole"></i>';
+            cardTitle = "Specimen Rejected: Fruit / Horticultural Produce";
+        } else if (msgText.includes("animal") || msgText.includes("wildlife")) {
+            iconHtml = '<i class="fa-solid fa-paw"></i>';
+            cardTitle = "Specimen Rejected: Animal / Non-Plant Object";
+        } else if (msgText.includes("culinary") || msgText.includes("food")) {
+            iconHtml = '<i class="fa-solid fa-utensils"></i>';
+            cardTitle = "Specimen Rejected: Culinary / Food Item";
+        } else if (msgText.includes("flower") || msgText.includes("blossom")) {
+            iconHtml = '<i class="fa-solid fa-spa"></i>';
+            cardTitle = "Specimen Rejected: Ornamental Flower Blossom";
+        }
+
         bubble.innerHTML = `
             <div class="bubble-avatar" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i></div>
             <div class="bubble-content">
                 <div class="nested-report-card specimen-rejection-card">
                     <div class="nested-report-header" style="border-bottom: 1px solid rgba(239, 68, 68, 0.25);">
-                        <h3 style="color: #ef4444;"><i class="fa-solid fa-circle-xmark"></i> Specimen Rejected: Non-Leaf Image</h3>
+                        <h3 style="color: #ef4444;"><i class="fa-solid fa-circle-xmark"></i> ${cardTitle}</h3>
                         <span class="report-badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">${modelId} Gate</span>
                     </div>
                     
                     <div class="nested-report-body" style="gap: 12px; padding: 16px;">
                         <div class="rejection-alert-banner">
-                            <i class="fa-solid fa-ban"></i>
+                            ${iconHtml}
                             <div>
                                 <strong>${result.error || "Non-Leaf Specimen Detected"}</strong>
                                 <p>${result.message || "No plant foliage or chlorophyll characteristics detected in the uploaded specimen."}</p>
@@ -600,11 +618,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="nested-advisor-box" style="background: rgba(239, 68, 68, 0.05); border-left: 3px solid #ef4444; margin-top: 10px;">
                             <div class="nested-advisor-item">
                                 <h4 style="color: #ef4444;">Agronomy Specimen Constraint:</h4>
-                                <p>${modelId} and AgriShield are trained exclusively to diagnose agricultural crop specimens (Cotton / Gossypium hirsutum &amp; Corn / Zea mays) and invasive field weeds. Images of humans, animals, objects, rooms, or digital art are rejected to maintain strict scientific accuracy.</p>
+                                <p>${modelId} and AgriShield are scientific deep learning networks trained exclusively on authentic vegetative crop leaves (Cotton / Gossypium hirsutum &amp; Corn / Zea mays) and invasive field weeds. Fruits (apples, citrus, berries), harvested corn cobs, flower bouquets, food, animals, or digital art are outside the training distribution and strictly rejected to prevent false positive classifications.</p>
                             </div>
                             <div class="nested-advisor-item" style="margin-top: 8px;">
                                 <h4 style="color: var(--accent-color);">Required Action:</h4>
-                                <p>${result.suggestion || "Please upload an authentic photograph of a crop leaf or weed specimen."}</p>
+                                <p>${result.suggestion || "Please upload an authentic photograph of a crop leaf blade (Cotton or Corn) or an invasive weed specimen."}</p>
                             </div>
                         </div>
                     </div>
