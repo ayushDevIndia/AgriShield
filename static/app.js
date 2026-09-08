@@ -394,9 +394,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================================================
     // CAMERA SNAPSHOT API HOOKS
     // ============================================================
-    openCameraBtn.addEventListener("click", async () => {
+    async function openCamera() {
         if (cameraOverlay.style.display === "flex") {
             closeCamera();
+            return;
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("Camera Access Note: Direct webcam streaming requires localhost (http://localhost:8000) or HTTPS. Opening file selector so you can choose or take a photo!");
+            fileInput.value = "";
+            fileInput.click();
             return;
         }
         
@@ -410,9 +417,13 @@ document.addEventListener("DOMContentLoaded", () => {
             resetInputPill(); // Remove any attached file
         } catch (error) {
             console.error("Camera hook failed:", error);
-            alert("System Camera Alert: Could not acquire stream. Ensure camera permissions are enabled.");
+            alert("Camera Note: Could not acquire camera stream. Opening file selector so you can select a specimen image.");
+            fileInput.value = "";
+            fileInput.click();
         }
-    });
+    }
+
+    openCameraBtn.addEventListener("click", openCamera);
 
     function closeCamera() {
         if (cameraStreamTrack) {
@@ -897,16 +908,23 @@ document.addEventListener("DOMContentLoaded", () => {
             const action = card.dataset.action;
             if (action === "upload-cotton") {
                 setActiveModel("InceptionV3_Cotton_Mamba");
+                chatTextInput.value = "Diagnose Cotton leaf specimen with Vision Mamba...";
+                fileInput.value = "";
                 fileInput.click();
             } else if (action === "upload-corn") {
                 setActiveModel("Untitled65");
+                chatTextInput.value = "Diagnose Corn (Maize) leaf specimen with CBAM attention...";
+                fileInput.value = "";
                 fileInput.click();
             } else if (action === "upload-weed") {
                 setActiveModel("InceptionV3_Cotton_Mamba");
+                chatTextInput.value = "Identify invasive weed specimen and management advice...";
+                fileInput.value = "";
                 fileInput.click();
             } else if (action === "open-camera") {
                 openCamera();
             } else {
+                fileInput.value = "";
                 fileInput.click();
             }
         });
