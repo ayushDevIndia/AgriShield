@@ -733,7 +733,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <!-- Nested Report Card inside bubble -->
                 <div class="nested-report-card">
                     <div class="nested-report-header">
-                        <h3><i class="fa-solid fa-microchip"></i> Agri-Scan Diagnostics</h3>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <img src="/igu_seal.png" alt="IGU Seal" style="width: 22px; height: 22px; border-radius: 50%; object-fit: contain; box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);">
+                            <h3>Agri-Scan Diagnostics</h3>
+                        </div>
                         <div style="display: flex; gap: 6px; align-items: center;">
                             <span class="report-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-color); border: 1px solid rgba(16, 185, 129, 0.3);">${cropName} • ${archName}</span>
                             <span class="report-badge ${badgeClass}">${modeLabel}</span>
