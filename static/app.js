@@ -47,14 +47,108 @@ document.addEventListener("DOMContentLoaded", () => {
     const systemStatusIndicator = document.getElementById("system-status-indicator");
 
     // Application States
-    let selectedModelId = "LNet";
+    let selectedModelId = "InceptionV3_Cotton_Mamba";
     let activeImageFile = null;
     let cameraStreamTrack = null;
     let diagnosisHistoryList = [];
     let activeModelList = [];
 
-    // Botanical preventive guide database
+    // Comprehensive Botanical Diagnostic & Preventive Guide Database
     const BOTANICAL_DATABASE = {
+        // --- 🌿 COTTON CROPS & FIELD WEEDS (13 CLASSES) ---
+        "cotton": {
+            commonName: "Cotton Crop (Healthy)",
+            scientificName: "Gossypium hirsutum L.",
+            risk: "safe",
+            description: "Healthy cotton foliage detected. Distinct palmate 3–5 lobed leaves with vibrant green chlorophyll saturation, intact mesophyll cellular structure, and robust photosynthetic activity.",
+            prevention: "Maintain scientific N-P-K fertigation schedules, avoid over-irrigation, and implement regular integrated pest management (IPM) scouting against bollworms and sucking pests."
+        },
+        "Amaranthus viridis": {
+            commonName: "Slender Amaranth (Chulai)",
+            scientificName: "Amaranthus viridis L.",
+            risk: "high",
+            description: "Erect annual broadleaf weed with ovate leaves and greenish flower clusters. Rapid vegetative growth aggressively competes with cotton seedlings for sunlight, nitrogen, and soil moisture.",
+            prevention: "Apply pre-emergence Pendimethalin 38.7% CS within 48 hours of sowing. Early post-emergence spot application of Pyrithiobac-sodium 10% EC for selective broadleaf suppression."
+        },
+        "Carpetweeds": {
+            commonName: "Carpetweed",
+            scientificName: "Mollugo verticillata L.",
+            risk: "medium",
+            description: "Prostrate annual weed forming dense, circular mats across the topsoil, choking feeder roots of young cotton plants and hindering furrow irrigation flow.",
+            prevention: "Early inter-row shallow hoeing or organic mulching. Apply pre-emergence Oxyfluorfen or Pendimethalin to prevent seed germination in warm, moist seedbeds."
+        },
+        "Cleome gynandra": {
+            commonName: "Spiderwisp (Shwet Hulhul)",
+            scientificName: "Cleome gynandra L.",
+            risk: "medium",
+            description: "Annual herbaceous weed with 5-foliolate palmate compound leaves and sticky glandular hairs. Highly drought-tolerant and acts as an alternative host for insect vectors.",
+            prevention: "Early manual hoeing at 15–20 days after sowing. Directed post-emergence application of selective broadleaf graminicides where infesting young cotton rows."
+        },
+        "Commelina benghalensis": {
+            commonName: "Bengal Dayflower (Kankawa)",
+            scientificName: "Commelina benghalensis L.",
+            risk: "high",
+            description: "Creeping perennial weed producing both aerial blue flowers and subterranean seeds, making field eradication extremely difficult once established in cotton fields.",
+            prevention: "Apply pre-emergence Flumioxazin or Pendimethalin. Directed inter-row spraying of Glyphosate using protective spray hoods to prevent herbicide drift onto cotton foliage."
+        },
+        "Cynodon dactylon": {
+            commonName: "Bermuda Grass (Doob Ghas)",
+            scientificName: "Cynodon dactylon (L.) Pers.",
+            risk: "critical",
+            description: "Aggressive rhizomatous and stoloniferous perennial turf grass forming impenetrable underground root nets, severely robbing cotton plants of moisture and causing stunted bolls.",
+            prevention: "Deep summer mouldboard ploughing to desiccate rhizomes under hot solar rays. Apply post-emergence Quizalofop-ethyl 5% EC or Propaquizafop 10% EC at active weed growth."
+        },
+        "Echinochloa colona": {
+            commonName: "Jungle Rice (Sawa Grass)",
+            scientificName: "Echinochloa colona (L.) Link",
+            risk: "critical",
+            description: "Fast-tillering annual grassy weed that rapidly overtakes young cotton stands, causing severe nutrient depletion and up to 60% yield reduction if unmanaged.",
+            prevention: "Apply pre-emergence Pendimethalin 30% EC. Follow with early post-emergence application of Quizalofop-p-ethyl or Fenoxaprop-p-ethyl at the 2–3 leaf weed stage."
+        },
+        "Morningglory": {
+            commonName: "Morning Glory (Tall / Ivyleaf)",
+            scientificName: "Ipomoea purpurea / hederacea",
+            risk: "critical",
+            description: "Aggressive climbing vine weed that coils tightly around cotton stalks, causing severe lodging, entangling mechanical pickers, and causing substantial boll rot.",
+            prevention: "Pre-emergence Prometryn or Diuron application. Apply early post-emergence directed Glufosinate-ammonium with shielded nozzles before vines begin twining cotton stems."
+        },
+        "Nutsedge": {
+            commonName: "Purple Nutsedge (Motha)",
+            scientificName: "Cyperus rotundus L.",
+            risk: "critical",
+            description: "Perennial sedge with underground tubers and basal bulbs. Exudes allelopathic root chemicals that directly inhibit cotton taproot elongation and boll development.",
+            prevention: "Pre-plant summer tillage and soil solarization. Selective post-emergence directed application of Halosulfuron-methyl 75% WDG directed strictly between cotton rows."
+        },
+        "PalmerAmaranth": {
+            commonName: "Palmer Amaranth (Pigweed)",
+            scientificName: "Amaranthus palmeri S. Watson",
+            risk: "critical",
+            description: "Notorious, aggressive broadleaf weed growing up to 2-3 inches per day, known for multi-herbicide resistance. Capable of devastating cotton yields by over 70%.",
+            prevention: "Zero-tolerance management: destroy escapes before seed set. Use overlapping residual herbicides (Pendimethalin followed by S-metolachlor) and timely post Glufosinate sprays."
+        },
+        "Phyllanthus urinaria": {
+            commonName: "Chamberbitter (Hazarmani)",
+            scientificName: "Phyllanthus urinaria L.",
+            risk: "medium",
+            description: "Warm-season annual herb with miniature sensitive leaves and abundant seed capsules under branches, leading to dense re-infestation under moist cotton canopies.",
+            prevention: "Apply early pre-emergence residual herbicides like Oxyfluorfen. Regular hand rogueing of isolated plants before explosive seed capsule maturation."
+        },
+        "Purslane": {
+            commonName: "Common Purslane (Kulfa)",
+            scientificName: "Portulaca oleracea L.",
+            risk: "high",
+            description: "Succulent prostrate broadleaf weed with fleshy reddish-green stems that retains high water content, surviving severe drought and re-rooting from cultivation fragments.",
+            prevention: "Avoid fragmenting succulent stems with rototillers. Apply pre-emergence Metolachlor or Pendimethalin early. Directed spray of 2,4-D amine with strict drift shields."
+        },
+        "Trianthema portulacastrum": {
+            commonName: "Horse Purslane (Santhi / Bishkapra)",
+            scientificName: "Trianthema portulacastrum L.",
+            risk: "critical",
+            description: "Dominant invasive succulent broadleaf weed in cotton tracts. Germinates rapidly to create an opaque ground carpet that smothers cotton seedlings during the first 45–60 days.",
+            prevention: "Strict pre-emergence application of Pendimethalin 30% EC @ 1.0 kg a.i./ha within 48h of sowing. Early post-emergence directed Pyrithiobac-sodium @ 62.5 g a.i./ha at 20–25 DAS."
+        },
+
+        // --- 🌽 CORN CROPS & FIELD WEEDS (5 CLASSES) ---
         "bluegrass": {
             commonName: "Annual Bluegrass",
             scientificName: "Poa annua L.",
@@ -91,8 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
             prevention: "Apply post-emergent Halosulfuron-methyl. Install effective field subsurface drainages and perform deep autumn tilling."
         }
     };
-
-    const CLASS_NAMES = ["bluegrass", "chenopodium album", "cirsium setosum", "corn", "sedge"];
 
     // ============================================================
     // THEME CONFIGURATION
@@ -155,33 +247,61 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) throw new Error("Registry server down");
             activeModelList = await response.json();
             
-            // Set first model active as trigger label
-            const defaultModel = activeModelList.find(m => m.id === selectedModelId);
+            // Set active model trigger label
+            const defaultModel = activeModelList.find(m => m.id === selectedModelId) || activeModelList[0];
             if (defaultModel) {
-                activeModelName.textContent = defaultModel.name;
+                selectedModelId = defaultModel.id;
+                activeModelName.textContent = defaultModel.champion ? `${defaultModel.name} ★` : defaultModel.name;
             }
 
             modelDropdownMenu.innerHTML = "";
-            activeModelList.forEach(model => {
+
+            const cottonModels = activeModelList.filter(m => m.crop === "Cotton");
+            const cornModels = activeModelList.filter(m => m.crop === "Corn");
+
+            function renderModelItem(model) {
                 const isActive = model.id === selectedModelId ? "active" : "";
                 const menuItem = document.createElement("div");
                 menuItem.className = `model-menu-item ${isActive}`;
                 menuItem.dataset.id = model.id;
                 
+                const champHtml = model.champion ? `<span class="model-champ-badge">Champion</span>` : "";
+
                 menuItem.innerHTML = `
-                    <div class="model-menu-item-title">${model.name}</div>
-                    <div class="model-menu-item-desc">Params: ${model.params} | Acc: ${model.accuracy}</div>
+                    <div class="model-menu-item-header">
+                        <span class="model-menu-item-title">${model.name}</span>
+                        ${champHtml}
+                    </div>
+                    <div class="model-menu-item-desc">Params: ${model.params} | Acc: ${model.accuracy} | Epochs: ${model.epochs}</div>
                 `;
                 
                 menuItem.addEventListener("click", () => {
                     selectedModelId = model.id;
-                    activeModelName.textContent = model.name;
+                    activeModelName.textContent = model.champion ? `${model.name} ★` : model.name;
                     document.querySelectorAll(".model-menu-item").forEach(item => item.classList.remove("active"));
                     menuItem.classList.add("active");
                 });
                 
                 modelDropdownMenu.appendChild(menuItem);
-            });
+            }
+
+            // Render Cotton Suite
+            if (cottonModels.length > 0) {
+                const cottonHeader = document.createElement("div");
+                cottonHeader.className = "model-group-header";
+                cottonHeader.innerHTML = `<i class="fa-solid fa-leaf"></i> Cotton Weed Suite (Vision Mamba)`;
+                modelDropdownMenu.appendChild(cottonHeader);
+                cottonModels.forEach(renderModelItem);
+            }
+
+            // Render Corn Suite
+            if (cornModels.length > 0) {
+                const cornHeader = document.createElement("div");
+                cornHeader.className = "model-group-header";
+                cornHeader.innerHTML = `<i class="fa-solid fa-seedling"></i> Corn Weed Suite (CBAM Attention)`;
+                modelDropdownMenu.appendChild(cornHeader);
+                cornModels.forEach(renderModelItem);
+            }
 
             // Set indicators to online active status
             systemStatusIndicator.querySelector(".status-dot").className = "status-dot pulsing";
@@ -412,11 +532,16 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.className = "message-bubble ai";
         bubble.id = bubbleId;
         
+        const isCotton = modelId.toLowerCase().includes("cotton");
+        const statusMsg = isCotton
+            ? `Running Vision Mamba state-space blocks on ${modelId}...`
+            : `Running CBAM attention gates on ${modelId}...`;
+
         bubble.innerHTML = `
             <div class="bubble-avatar"><i class="fa-solid fa-leaf"></i></div>
             <div class="bubble-content">
                 <div class="bubble-text" style="color: var(--text-muted); font-size: 11px;">
-                    Running CBAM attention gates on ${modelId} layers...
+                    ${statusMsg}
                 </div>
                 <div class="typing-container">
                     <span class="typing-dot"></span>
@@ -475,7 +600,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="nested-advisor-box" style="background: rgba(239, 68, 68, 0.05); border-left: 3px solid #ef4444; margin-top: 10px;">
                             <div class="nested-advisor-item">
                                 <h4 style="color: #ef4444;">Agronomy Specimen Constraint:</h4>
-                                <p>${modelId} and AgriShield are trained exclusively to diagnose agricultural crop specimens (Corn / Zea mays) and invasive field weeds (Bluegrass, Chenopodium, Cirsium, Sedge). Images of humans, animals, objects, rooms, or documents are rejected to maintain strict scientific accuracy.</p>
+                                <p>${modelId} and AgriShield are trained exclusively to diagnose agricultural crop specimens (Cotton / Gossypium hirsutum &amp; Corn / Zea mays) and invasive field weeds. Images of humans, animals, objects, rooms, or digital art are rejected to maintain strict scientific accuracy.</p>
                             </div>
                             <div class="nested-advisor-item" style="margin-top: 8px;">
                                 <h4 style="color: var(--accent-color);">Required Action:</h4>
@@ -495,22 +620,30 @@ document.addEventListener("DOMContentLoaded", () => {
         bubble.className = "message-bubble ai";
         
         const className = result.class_name;
-        const dbInfo = BOTANICAL_DATABASE[className];
-        const modeLabel = result.mode === "trained_deep_learning" ? "Trained Graph Core" : "Simulation Engine";
+        const dbInfo = BOTANICAL_DATABASE[className] || {
+            commonName: className,
+            scientificName: className,
+            risk: "medium",
+            description: "Agricultural specimen identified via deep learning pattern matching.",
+            prevention: "Implement standard integrated weed management (IWM) scouting and prevention."
+        };
+        const modeLabel = result.mode === "trained_deep_learning" ? "Trained Graph Core" : "Vision Engine";
         const badgeClass = result.mode === "trained_deep_learning" ? "" : "warning";
+        const cropName = result.crop || (modelId.toLowerCase().includes("cotton") ? "Cotton" : "Corn");
+        const archName = result.architecture || (cropName === "Cotton" ? "Vision Mamba" : "CBAM");
         
         // Progress ring offset calculations
         const perimeter = 2 * Math.PI * 40;
         const dashOffset = perimeter - (perimeter * result.confidence) / 100;
         
-        // Probability bars HTML
+        // Softmax probability breakdown sorted by confidence descending
+        const sortedProbs = Object.entries(result.probabilities || {}).sort((a, b) => b[1] - a[1]);
         let probBarsHtml = "";
-        CLASS_NAMES.forEach(c => {
-            const prob = result.probabilities[c] || 0;
+        sortedProbs.forEach(([name, prob]) => {
             probBarsHtml += `
                 <div class="nested-bar-row">
                     <div class="nested-bar-labels">
-                        <span class="nested-bar-name">${c}</span>
+                        <span class="nested-bar-name">${name}</span>
                         <span class="nested-bar-val">${prob}%</span>
                     </div>
                     <div class="nested-bar-bg">
@@ -529,7 +662,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="nested-report-card">
                     <div class="nested-report-header">
                         <h3><i class="fa-solid fa-microchip"></i> Agri-Scan Diagnostics</h3>
-                        <span class="report-badge ${badgeClass}">${modeLabel}</span>
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <span class="report-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-color); border: 1px solid rgba(16, 185, 129, 0.3);">${cropName} • ${archName}</span>
+                            <span class="report-badge ${badgeClass}">${modeLabel}</span>
+                        </div>
                     </div>
                     
                     <div class="nested-report-body">
@@ -617,8 +753,8 @@ document.addEventListener("DOMContentLoaded", () => {
             historyItem.className = "history-item";
             historyItem.dataset.id = item.id;
             
-            const dbInfo = BOTANICAL_DATABASE[item.className];
-            const displayTitle = dbInfo.commonName.split(" ")[0]; // First word of common name
+            const dbInfo = BOTANICAL_DATABASE[item.className] || { commonName: item.className };
+            const displayTitle = (dbInfo.commonName || item.className).split(" ")[0];
             
             historyItem.innerHTML = `
                 <i class="fa-solid fa-file-invoice-leaf" style="color: var(--accent-color);"></i>

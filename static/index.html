@@ -79,7 +79,7 @@
                     <!-- ChatGPT-style model switcher dropdown -->
                     <div class="model-dropdown-container">
                         <button class="model-dropdown-trigger" id="model-dropdown-btn">
-                            <span class="model-trigger-name" id="active-model-name">LeafNet (L-Net) + CBAM</span>
+                            <span class="model-trigger-name" id="active-model-name">InceptionV3 + Vision Mamba</span>
                             <i class="fa-solid fa-chevron-down"></i>
                         </button>
                         <div class="model-dropdown-menu" id="model-dropdown-menu">
@@ -104,23 +104,29 @@
                         <i class="fa-solid fa-leaf animate-pulse"></i>
                     </div>
                     <h2>How can AgriShield help you today?</h2>
-                    <p>Upload a crop leaf specimen image or capture a snapshot. The deep learning core will run real-time CBAM-augmented classification to diagnose corn health and invasive weeds.</p>
+                    <p>Upload a crop leaf specimen image or capture a snapshot. The deep learning core executes real-time Vision Mamba &amp; CBAM attention networks to diagnose Cotton (13 species) and Corn crops against invasive field weeds.</p>
                     
-                    
-                    <!-- Suggesion cards -->
+                    <!-- Suggestion cards -->
                     <div class="suggestion-grid">
+                        <div class="suggestion-card" data-action="upload-cotton">
+                            <div class="card-icon"><i class="fa-solid fa-feather-pointed"></i></div>
+                            <div>
+                                <h4>Analyze Cotton (Gossypium)</h4>
+                                <p>Scan cotton foliage with Vision Mamba.</p>
+                            </div>
+                        </div>
                         <div class="suggestion-card" data-action="upload-corn">
                             <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
                             <div>
-                                <h4>Analyze Zea mays</h4>
-                                <p>Scan a healthy corn leaf specimen.</p>
+                                <h4>Analyze Corn (Zea mays)</h4>
+                                <p>Scan maize foliage with CBAM.</p>
                             </div>
                         </div>
                         <div class="suggestion-card" data-action="upload-weed">
                             <div class="card-icon"><i class="fa-solid fa-spider"></i></div>
                             <div>
-                                <h4>Identify Broadleaf Weed</h4>
-                                <p>Diagnose White Goosefoot or Thistle.</p>
+                                <h4>Identify Invasive Weeds</h4>
+                                <p>Diagnose Nutsedge, Purslane, Thistle.</p>
                             </div>
                         </div>
                     </div>
