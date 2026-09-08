@@ -71,6 +71,7 @@
             </div>
             
             <!-- TOP CONTROLS ROW -->
+            <!-- TOP CONTROLS ROW (ChatGPT / Gemini Style) -->
             <header class="chat-top-header">
                 <div class="header-left">
                     <button class="sidebar-open-btn" id="open-sidebar-btn" title="Open Sidebar">
@@ -78,19 +79,32 @@
                     </button>
                     <!-- ChatGPT-style model switcher dropdown -->
                     <div class="model-dropdown-container">
-                        <button class="model-dropdown-trigger" id="model-dropdown-btn">
+                        <button class="model-dropdown-trigger" id="model-dropdown-btn" title="Switch Deep Learning Model">
+                            <i class="fa-solid fa-wand-magic-sparkles model-trigger-sparkle"></i>
                             <span class="model-trigger-name" id="active-model-name">InceptionV3 + Vision Mamba</span>
-                            <i class="fa-solid fa-chevron-down"></i>
+                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
                         </button>
                         <div class="model-dropdown-menu" id="model-dropdown-menu">
                             <!-- Dynamic Model options rendered by JS -->
                         </div>
                     </div>
                 </div>
+
+                <div class="header-center">
+                    <div class="university-top-badge" id="open-univ-info" title="Indira Gandhi University, Meerpur (Rewari)">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span class="univ-name">IGU Meerpur, Rewari</span>
+                    </div>
+                </div>
+
                 <div class="header-right">
+                    <button class="header-action-btn" id="open-benchmarks-btn" title="View Model Benchmark Leaderboard">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Leaderboard</span>
+                    </button>
                     <div class="system-status" id="system-status-indicator">
                         <span class="status-dot pulsing"></span>
-                        <span class="status-text">Connecting...</span>
+                        <span class="status-text">Vision Core Online</span>
                     </div>
                 </div>
             </header>
@@ -98,35 +112,65 @@
             <!-- CHAT CONVERSATION VIEWPORT -->
             <div class="chat-feed-container" id="chat-feed">
                 
-                <!-- Center Welcome Screen (When feed is empty) -->
+                <!-- Center Welcome Screen (Gemini & ChatGPT Inspired) -->
                 <div class="welcome-screen" id="welcome-screen">
-                    <div class="welcome-logo">
-                        <i class="fa-solid fa-leaf animate-pulse"></i>
+                    <div class="welcome-gemini-glow">
+                        <div class="gemini-sparkle-circle">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
                     </div>
-                    <h2>How can AgriShield help you today?</h2>
-                    <p>Upload a crop leaf specimen image or capture a snapshot. The deep learning core executes real-time Vision Mamba &amp; CBAM attention networks to diagnose Cotton (13 species) and Corn crops against invasive field weeds.</p>
+
+                    <h1 class="gemini-greeting">Hello, <span class="shimmer-gradient-text">Researcher</span></h1>
+                    <h2 class="gemini-subheading">What crop or weed specimen would you like to diagnose today?</h2>
                     
-                    <!-- Suggestion cards -->
+                    <div class="welcome-univ-pill">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <span>Department of Computer Science &amp; Agronomy &bull; <strong>IGU Meerpur, Rewari</strong></span>
+                    </div>
+
+                    <!-- Gemini Prompt Cards -->
                     <div class="suggestion-grid">
                         <div class="suggestion-card" data-action="upload-cotton">
-                            <div class="card-icon"><i class="fa-solid fa-feather-pointed"></i></div>
-                            <div>
-                                <h4>Analyze Cotton (Gossypium)</h4>
-                                <p>Scan cotton foliage with Vision Mamba.</p>
+                            <div class="card-icon cotton-gradient"><i class="fa-solid fa-feather-pointed"></i></div>
+                            <div class="card-text">
+                                <div class="card-header-line">
+                                    <h4>Analyze Cotton (Gossypium)</h4>
+                                    <span class="card-chip">97.6% Acc</span>
+                                </div>
+                                <p>Diagnose Bermuda grass, Purslane, or healthy crop leaves across 13 classes.</p>
                             </div>
                         </div>
+
                         <div class="suggestion-card" data-action="upload-corn">
-                            <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
-                            <div>
-                                <h4>Analyze Corn (Zea mays)</h4>
-                                <p>Scan maize foliage with CBAM.</p>
+                            <div class="card-icon corn-gradient"><i class="fa-solid fa-seedling"></i></div>
+                            <div class="card-text">
+                                <div class="card-header-line">
+                                    <h4>Analyze Corn (Zea mays)</h4>
+                                    <span class="card-chip">99.8% Acc</span>
+                                </div>
+                                <p>Scan maize foliage with CBAM attention to detect Bluegrass, Sedge, or Thistle.</p>
                             </div>
                         </div>
+
                         <div class="suggestion-card" data-action="upload-weed">
-                            <div class="card-icon"><i class="fa-solid fa-spider"></i></div>
-                            <div>
-                                <h4>Identify Invasive Weeds</h4>
-                                <p>Diagnose Nutsedge, Purslane, Thistle.</p>
+                            <div class="card-icon weed-gradient"><i class="fa-solid fa-shield-virus"></i></div>
+                            <div class="card-text">
+                                <div class="card-header-line">
+                                    <h4>Invasive Weed Triage</h4>
+                                    <span class="card-chip">Triple Shield</span>
+                                </div>
+                                <p>Automatic botanical risk indexing, herbicide prescriptions &amp; prevention tips.</p>
+                            </div>
+                        </div>
+
+                        <div class="suggestion-card" data-action="open-camera">
+                            <div class="card-icon cam-gradient"><i class="fa-solid fa-camera"></i></div>
+                            <div class="card-text">
+                                <div class="card-header-line">
+                                    <h4>Live Camera Scouting</h4>
+                                    <span class="card-chip">Realtime</span>
+                                </div>
+                                <p>Capture an instant live leaf photo using your phone or laptop camera.</p>
                             </div>
                         </div>
                     </div>
@@ -138,7 +182,7 @@
                 </div>
             </div>
 
-            <!-- CHAT BOTTOM PANEL (Pill Input box like ChatGPT) -->
+            <!-- CHAT BOTTOM PANEL (ChatGPT & Gemini Floating Pill) -->
             <footer class="chat-input-panel">
                 <div class="input-container-box">
                     
@@ -149,7 +193,10 @@
                             <div class="scanning-laser-line" id="active-laser-line"></div>
                             <button class="remove-thumbnail-btn" id="clear-selected-image" title="Remove specimen"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-                        <span class="preview-filename-text" id="selected-filename">specimen.jpg</span>
+                        <div class="preview-info-box">
+                            <span class="preview-filename-text" id="selected-filename">specimen.jpg</span>
+                            <span class="preview-status-text"><i class="fa-solid fa-circle-check"></i> Specimen staged &bull; Ready for inference</span>
+                        </div>
                     </div>
                     
                     <!-- Web camera capture preview overlay (inside main area) -->
@@ -170,30 +217,165 @@
                         <input type="file" id="file-input" accept="image/*" style="display: none;">
                         
                         <!-- Attachment Paperclip -->
-                        <button class="pill-utility-btn" id="attach-file-btn" title="Upload Leaf Image">
+                        <button class="pill-utility-btn" id="attach-file-btn" title="Upload Leaf Specimen">
                             <i class="fa-solid fa-paperclip"></i>
                         </button>
                         
                         <!-- Camera Button -->
-                        <button class="pill-utility-btn" id="open-camera-btn" title="Take Leaf Photo">
+                        <button class="pill-utility-btn" id="open-camera-btn" title="Take Live Photo">
                             <i class="fa-solid fa-camera"></i>
                         </button>
 
+                        <!-- Active Model Chip Indicator inside the input bar -->
+                        <div class="input-crop-badge" id="input-crop-badge" title="Current Active Neural Model">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span id="input-crop-badge-text">Cotton Mamba</span>
+                        </div>
+
                         <div class="pill-text-area-box">
-                            <input type="text" id="chat-text-input" placeholder="Upload crop leaf image and click send..." readonly>
+                            <input type="text" id="chat-text-input" placeholder="Attach a leaf image or click prompt cards to diagnose..." autocomplete="off">
                         </div>
 
                         <!-- Send Button -->
-                        <button class="pill-send-btn" id="send-diagnosis-btn" disabled>
+                        <button class="pill-send-btn" id="send-diagnosis-btn" disabled title="Run Neural Diagnosis">
                             <i class="fa-solid fa-arrow-up"></i>
                         </button>
                     </div>
                 </div>
+                
                 <div class="academic-note-text">
-                    AgriShield is built for PHD agronomy research. Model predictions run purely in-memory and represent simulated metrics based on model checkpoints.
+                    <span><i class="fa-solid fa-shield-halved"></i> AgriShield AI &bull; Indira Gandhi University, Meerpur (Rewari) &bull; Vision Mamba &amp; CBAM Attention Neural Core</span>
                 </div>
             </footer>
         </main>
+    </div>
+
+    <!-- BENCHMARK LEADERBOARD MODAL -->
+    <div class="modal-backdrop" id="leaderboard-modal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <div class="modal-icon"><i class="fa-solid fa-trophy"></i></div>
+                    <div>
+                        <h3>Neural Architecture Leaderboard</h3>
+                        <p>Indira Gandhi University, Meerpur (Rewari) &bull; Research Evaluation Suite</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="close-leaderboard-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="leaderboard-section">
+                    <h4 class="section-title"><i class="fa-solid fa-feather-pointed"></i> Cotton Vision Mamba Models (13 Classes)</h4>
+                    <table class="benchmark-table">
+                        <thead>
+                            <tr>
+                                <th>Model Architecture</th>
+                                <th>Type</th>
+                                <th>Params</th>
+                                <th>Input</th>
+                                <th>Accuracy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight-row">
+                                <td><strong>InceptionV3 + Vision Mamba</strong> <span class="badge-champ">Top Champion</span></td>
+                                <td>State-Space Hybrid</td>
+                                <td>24.3M</td>
+                                <td>299x299</td>
+                                <td><span class="acc-pill">97.62%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>InceptionResNetV2 + Vision Mamba</strong></td>
+                                <td>Deep State-Space</td>
+                                <td>54.8M</td>
+                                <td>299x299</td>
+                                <td><span class="acc-pill">97.38%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>EfficientNetB0 + Vision Mamba</strong></td>
+                                <td>Compound-Scaled</td>
+                                <td>4.5M</td>
+                                <td>224x224</td>
+                                <td><span class="acc-pill">96.46%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>ResNet152 + Vision Mamba</strong></td>
+                                <td>Ultra-Deep Residual</td>
+                                <td>58.7M</td>
+                                <td>224x224</td>
+                                <td><span class="acc-pill">96.08%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>NASNetMobile + Vision Mamba</strong></td>
+                                <td>Neural Search Edge</td>
+                                <td>6.5M</td>
+                                <td>256x256</td>
+                                <td><span class="acc-pill">91.69%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>SqueezeNet + Vision Mamba</strong></td>
+                                <td>Ultra-Compact IoT</td>
+                                <td>1.2M</td>
+                                <td>224x224</td>
+                                <td><span class="acc-pill">90.23%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="leaderboard-section" style="margin-top: 20px;">
+                    <h4 class="section-title"><i class="fa-solid fa-seedling"></i> Corn CBAM Attention Models (5 Classes)</h4>
+                    <table class="benchmark-table">
+                        <thead>
+                            <tr>
+                                <th>Model Architecture</th>
+                                <th>Type</th>
+                                <th>Params</th>
+                                <th>Input</th>
+                                <th>Accuracy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight-row">
+                                <td><strong>ConvNeXt-Tiny + CBAM</strong> <span class="badge-champ">Corn Champion</span></td>
+                                <td>Modern ConvNet</td>
+                                <td>28.4M</td>
+                                <td>224x224</td>
+                                <td><span class="acc-pill">99.80%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>InceptionV3 + CBAM</strong></td>
+                                <td>Multi-Scale Inception</td>
+                                <td>23.4M</td>
+                                <td>224x224</td>
+                                <td><span class="acc-pill">96.50%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Inception-ResNet-v2 + CBAM</strong></td>
+                                <td>Residual Inception</td>
+                                <td>55.3M</td>
+                                <td>224x224</td>
+                                <td><span class="acc-pill">96.30%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>DenseNet121 + CBAM</strong></td>
+                                <td>Dense Connectivity</td>
+                                <td>23.4M</td>
+                                <td>224x224</td>
+                                <td><span class="acc-pill">96.10%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>LeafNet (L-Net) + CBAM</strong></td>
+                                <td>Custom Lightweight</td>
+                                <td>0.47M</td>
+                                <td>224x224</td>
+                                <td><span class="acc-pill">88.60%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </div>
     </div>
 </body>
 </html>

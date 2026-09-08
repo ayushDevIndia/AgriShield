@@ -241,6 +241,33 @@ document.addEventListener("DOMContentLoaded", () => {
         modelDropdownMenu.classList.remove("active");
     });
 
+    function setActiveModel(modelId) {
+        selectedModelId = modelId;
+        const model = activeModelList.find(m => m.id === modelId);
+        if (model) {
+            activeModelName.textContent = model.champion ? `${model.name} ★` : model.name;
+            const badgeText = document.getElementById("input-crop-badge-text");
+            if (badgeText) {
+                badgeText.textContent = model.crop === "Cotton" ? "Cotton Mamba" : "Corn CBAM";
+            }
+        }
+        document.querySelectorAll(".model-menu-item").forEach(item => {
+            if (item.dataset.id === modelId) {
+                item.classList.add("active");
+            } else {
+                item.classList.remove("active");
+            }
+        });
+    }
+
+    const inputCropBadge = document.getElementById("input-crop-badge");
+    if (inputCropBadge) {
+        inputCropBadge.addEventListener("click", (e) => {
+            e.stopPropagation();
+            modelDropdownMenu.classList.toggle("active");
+        });
+    }
+
     async function loadModelsRegistry() {
         try {
             const response = await fetch("/api/models");
@@ -250,8 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Set active model trigger label
             const defaultModel = activeModelList.find(m => m.id === selectedModelId) || activeModelList[0];
             if (defaultModel) {
-                selectedModelId = defaultModel.id;
-                activeModelName.textContent = defaultModel.champion ? `${defaultModel.name} ★` : defaultModel.name;
+                setActiveModel(defaultModel.id);
             }
 
             modelDropdownMenu.innerHTML = "";
@@ -276,10 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 `;
                 
                 menuItem.addEventListener("click", () => {
-                    selectedModelId = model.id;
-                    activeModelName.textContent = model.champion ? `${model.name} ★` : model.name;
-                    document.querySelectorAll(".model-menu-item").forEach(item => item.classList.remove("active"));
-                    menuItem.classList.add("active");
+                    setActiveModel(model.id);
                 });
                 
                 modelDropdownMenu.appendChild(menuItem);
@@ -305,7 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Set indicators to online active status
             systemStatusIndicator.querySelector(".status-dot").className = "status-dot pulsing";
-            systemStatusIndicator.querySelector(".status-text").textContent = "Connected";
+            systemStatusIndicator.querySelector(".status-text").textContent = "Vision Core Online";
         } catch (error) {
             console.error("Failed to load model registry:", error);
             activeModelName.textContent = "Offline Backup Mode";
@@ -462,8 +485,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const typingBubbleId = appendAITypingIndicator(modelToRun);
         scrollFeedToBottom();
 
-        // Lock trigger controls
+        // Lock trigger controls & show sleek analyzing spinner
         sendDiagnosisBtn.disabled = true;
+        sendDiagnosisBtn.classList.add("analyzing");
+        sendDiagnosisBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         modelDropdownBtn.classList.add("pointer-none");
 
         // Submit to Flask REST API
@@ -496,7 +521,16 @@ document.addEventListener("DOMContentLoaded", () => {
             removeMessageBubble(typingBubbleId);
             appendSimpleAIMessage("Diagnosis Failure: The neural core backend is currently offline. Ensure `app.py` is active in the background.", modelToRun);
         } finally {
-            // Unlock model controls
+            // Unlock model controls & reset send button
+            sendDiagnosisBtn.classList.remove("analyzing");
+            sendDiagnosisBtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+            if (activeImageFile) {
+                sendDiagnosisBtn.disabled = false;
+                sendDiagnosisBtn.classList.add("active");
+            } else {
+                sendDiagnosisBtn.disabled = true;
+                sendDiagnosisBtn.classList.remove("active");
+            }
             modelDropdownBtn.classList.remove("pointer-none");
             scrollFeedToBottom();
         }
@@ -511,11 +545,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const bubble = document.createElement("div");
         bubble.className = "message-bubble user";
         
+        const userQuery = (chatTextInput.value || "").trim();
+        const displayQuery = userQuery.length > 0 ? userQuery : "Please diagnose this crop specimen leaf for invasive weeds.";
+
         bubble.innerHTML = `
             <div class="bubble-avatar"><i class="fa-solid fa-user"></i></div>
             <div class="bubble-content">
                 <div class="bubble-text-wrapper">
-                    <div class="bubble-text">Please diagnose this crop specimen leaf.</div>
+                    <div class="bubble-text">${displayQuery}</div>
                 </div>
                 <div class="bubble-attachment-preview">
                     <img src="${imgUrl}" alt="Attachment Specimen">
@@ -524,6 +561,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         
         messageThread.appendChild(bubble);
+        chatTextInput.value = "";
     }
 
     function appendAITypingIndicator(modelId) {
@@ -672,8 +710,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         bubble.innerHTML = `
-            <div class="bubble-avatar"><i class="fa-solid fa-leaf"></i></div>
+            <div class="bubble-avatar" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(56, 189, 248, 0.2)); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.35);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
             <div class="bubble-content">
+                <div class="ai-thought-pill">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Neural Attention Core &bull; Verified with ${modelId} (${archName}) &bull; ${result.confidence}% confidence</span>
+                </div>
+                
                 <div class="bubble-text">Neural scanning complete. Attention mapping identifies localized crop features. The diagnostic report sheet is detailed below:</div>
                 
                 <!-- Nested Report Card inside bubble -->
@@ -721,20 +764,56 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <p>${dbInfo.description}</p>
                             </div>
                             <div class="nested-advisor-item" style="margin-top: 6px;">
-                                <h4>Prevention & Sprays Plan:</h4>
+                                <h4>Prevention &amp; Sprays Plan:</h4>
                                 <p>${dbInfo.prevention}</p>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Actions -->
+                    <!-- Actions (ChatGPT & Gemini Style) -->
                     <div class="nested-report-footer">
-                        <button class="nested-print-btn" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Diagnosis Sheet</button>
+                        <button class="action-pill-btn copy-report-btn" title="Copy diagnosis to clipboard">
+                            <i class="fa-regular fa-copy"></i> Copy Summary
+                        </button>
+                        <button class="action-pill-btn" onclick="window.print()" title="Print diagnostic sheet">
+                            <i class="fa-solid fa-print"></i> Print Sheet
+                        </button>
+                        <button class="action-pill-btn feedback-thumb-btn" data-dir="up" title="Helpful analysis">
+                            <i class="fa-regular fa-thumbs-up"></i>
+                        </button>
+                        <button class="action-pill-btn feedback-thumb-btn" data-dir="down" title="Report issue">
+                            <i class="fa-regular fa-thumbs-down"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         `;
         
+        // Wire up copy button
+        const copyBtn = bubble.querySelector(".copy-report-btn");
+        if (copyBtn) {
+            copyBtn.addEventListener("click", () => {
+                const reportText = `AgriShield AI Diagnosis Report (IGU Meerpur, Rewari)\nSpecimen: ${dbInfo.commonName} (${dbInfo.scientificName})\nCrop Group: ${cropName} | Model: ${modelId} (${archName})\nConfidence: ${result.confidence}%\nRisk Level: ${dbInfo.risk.toUpperCase()}\nManagement: ${dbInfo.prevention}`;
+                navigator.clipboard.writeText(reportText).then(() => {
+                    copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                    copyBtn.classList.add("active");
+                    setTimeout(() => {
+                        copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Summary';
+                        copyBtn.classList.remove("active");
+                    }, 2000);
+                });
+            });
+        }
+
+        // Wire up feedback buttons
+        bubble.querySelectorAll(".feedback-thumb-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const isAlready = btn.classList.contains("active");
+                bubble.querySelectorAll(".feedback-thumb-btn").forEach(b => b.classList.remove("active"));
+                if (!isAlready) btn.classList.add("active");
+            });
+        });
+
         messageThread.appendChild(bubble);
     }
 
@@ -812,13 +891,49 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".history-item").forEach(i => i.classList.remove("active"));
     });
 
-    // Suggesion card clicks
+    // Suggestion card clicks (Gemini / ChatGPT smart actions)
     document.querySelectorAll(".suggestion-card").forEach(card => {
         card.addEventListener("click", () => {
-            // Trigger browser select file dialog directly!
-            fileInput.click();
+            const action = card.dataset.action;
+            if (action === "upload-cotton") {
+                setActiveModel("InceptionV3_Cotton_Mamba");
+                fileInput.click();
+            } else if (action === "upload-corn") {
+                setActiveModel("Untitled65");
+                fileInput.click();
+            } else if (action === "upload-weed") {
+                setActiveModel("InceptionV3_Cotton_Mamba");
+                fileInput.click();
+            } else if (action === "open-camera") {
+                openCamera();
+            } else {
+                fileInput.click();
+            }
         });
     });
+
+    // Leaderboard Modal Controls
+    const leaderboardModal = document.getElementById("leaderboard-modal");
+    const openBenchmarksBtn = document.getElementById("open-benchmarks-btn");
+    const openUnivInfo = document.getElementById("open-univ-info");
+    const closeLeaderboardBtn = document.getElementById("close-leaderboard-btn");
+
+    function openLeaderboard() {
+        if (leaderboardModal) leaderboardModal.style.display = "flex";
+    }
+
+    function closeLeaderboard() {
+        if (leaderboardModal) leaderboardModal.style.display = "none";
+    }
+
+    if (openBenchmarksBtn) openBenchmarksBtn.addEventListener("click", openLeaderboard);
+    if (openUnivInfo) openUnivInfo.addEventListener("click", openLeaderboard);
+    if (closeLeaderboardBtn) closeLeaderboardBtn.addEventListener("click", closeLeaderboard);
+    if (leaderboardModal) {
+        leaderboardModal.addEventListener("click", (e) => {
+            if (e.target === leaderboardModal) closeLeaderboard();
+        });
+    }
 
     // ============================================================
     // DRAG AND DROP CAPABILITIES
