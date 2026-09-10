@@ -1969,10 +1969,12 @@ document.addEventListener("DOMContentLoaded", () => {
             farmerResultRiskBadge.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> <span>मध्यम जोखिम खरपतवार</span>';
         }
 
-        farmerResultConfText.innerText = `${(result.confidence * 100).toFixed(1)}% सटीकता`;
-        farmerResultModelPill.innerHTML = crop === "Cotton" 
-            ? '<i class="fa-solid fa-crown"></i> InceptionV3 Vision Mamba' 
-            : '<i class="fa-solid fa-crown"></i> ConvNeXt-Tiny CBAM';
+        const confVal = result.confidence > 1 ? result.confidence : result.confidence * 100;
+        const confSuffix = currentLanguage === "en" ? "Accuracy" : (currentLanguage === "pa" ? "ਸ਼ੁੱਧਤਾ" : (currentLanguage === "gu" ? "ચોકસાઈ" : (currentLanguage === "mr" ? "अचूकता" : "सटीकता")));
+        farmerResultConfText.innerText = `${confVal.toFixed(1)}% ${confSuffix}`;
+        if (farmerResultModelPill) {
+            farmerResultModelPill.style.display = "none";
+        }
 
         farmerResultSummaryText.innerText = (adviceData.summary && adviceData.summary[currentLanguage])
             ? adviceData.summary[currentLanguage]
