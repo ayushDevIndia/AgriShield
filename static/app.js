@@ -1519,7 +1519,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const farmerModalCropIcon = document.getElementById("farmer-modal-crop-icon");
     const farmerChoiceCamBtn = document.getElementById("farmer-choice-cam-btn");
     const farmerChoiceFileBtn = document.getElementById("farmer-choice-file-btn");
+    const farmerCameraInput = document.getElementById("farmer-camera-input");
+    const farmerGalleryInput = document.getElementById("farmer-gallery-input");
     const farmerNativeFileInput = document.getElementById("farmer-native-file-input");
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
     const farmerModalDropzone = document.getElementById("farmer-modal-dropzone");
     const farmerDemoWeedBtn = document.getElementById("farmer-demo-weed-btn");
     const farmerDemoCropBtn = document.getElementById("farmer-demo-crop-btn");
@@ -1752,30 +1755,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    if (farmerChoiceFileBtn) {
-        farmerChoiceFileBtn.addEventListener("click", () => {
-            farmerNativeFileInput.value = "";
-            farmerNativeFileInput.click();
-        });
-    }
-
-    if (farmerNativeFileInput) {
-        farmerNativeFileInput.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (file) handleFarmerSpecimenSubmit(file);
-        });
-    }
-
+    // Camera selection: on mobile or when WebRTC unavailable, directly trigger native phone camera!
     if (farmerChoiceCamBtn) {
         farmerChoiceCamBtn.addEventListener("click", async () => {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                const lang = currentLanguage;
-                const camErr = I18N_TEXTS.camera_error_msg && I18N_TEXTS.camera_error_msg[lang] ? I18N_TEXTS.camera_error_msg[lang] : "Could not open camera.";
-                showWarningModal("📷 Camera Note", camErr, "Please choose an image from your files / gallery.");
-                farmerNativeFileInput.click();
+            if (isMobileDevice || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                if (farmerCameraInput) {
+                    farmerCameraInput.value = "";
+                    farmerCameraInput.click();
+                } else if (farmerNativeFileInput) {
+                    farmerNativeFileInput.value = "";
+                    farmerNativeFileInput.click();
+                }
                 return;
             }
 
+            // Desktop in-browser webcam stream
             try {
                 farmerCameraStream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: { ideal: "environment" } },
@@ -1791,12 +1785,49 @@ document.addEventListener("DOMContentLoaded", () => {
                 farmerModalDropzone.style.display = "none";
                 farmerCameraContainer.style.display = "flex";
             } catch (err) {
-                console.error("Camera access failed:", err);
-                const lang = currentLanguage;
-                const camErr = I18N_TEXTS.camera_error_msg && I18N_TEXTS.camera_error_msg[lang] ? I18N_TEXTS.camera_error_msg[lang] : "Could not open camera.";
-                showWarningModal("📷 Camera Error", camErr, "Opening gallery selector instead.");
+                console.warn("Webcam stream failed, using camera file input:", err);
+                if (farmerCameraInput) {
+                    farmerCameraInput.value = "";
+                    farmerCameraInput.click();
+                } else if (farmerNativeFileInput) {
+                    farmerNativeFileInput.value = "";
+                    farmerNativeFileInput.click();
+                }
+            }
+        });
+    }
+
+    // Gallery selection: opens file/gallery manager
+    if (farmerChoiceFileBtn) {
+        farmerChoiceFileBtn.addEventListener("click", () => {
+            if (farmerGalleryInput) {
+                farmerGalleryInput.value = "";
+                farmerGalleryInput.click();
+            } else if (farmerNativeFileInput) {
+                farmerNativeFileInput.value = "";
                 farmerNativeFileInput.click();
             }
+        });
+    }
+
+    if (farmerCameraInput) {
+        farmerCameraInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) handleFarmerSpecimenSubmit(file);
+        });
+    }
+
+    if (farmerGalleryInput) {
+        farmerGalleryInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) handleFarmerSpecimenSubmit(file);
+        });
+    }
+
+    if (farmerNativeFileInput) {
+        farmerNativeFileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) handleFarmerSpecimenSubmit(file);
         });
     }
 
@@ -2102,6 +2133,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById("file-input");
     const attachFileBtn = document.getElementById("attach-file-btn");
     const openCameraBtn = document.getElementById("open-camera-btn");
+    const expertCameraInput = document.getElementById("expert-camera-input");
+    if (expertCameraInput) {
+        expertCameraInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                loadSpecimenImage(file);
+                triggerScanDiagnosis();
+            }
+        });
+    }
     const chatTextInput = document.getElementById("chat-text-input");
     const sendDiagnosisBtn = document.getElementById("send-diagnosis-btn");
     const selectedImageBar = document.getElementById("selected-image-bar");
@@ -2329,11 +2370,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (openCameraBtn) openCameraBtn.addEventListener("click", openExpertCamera);
 
     async function openExpertCamera() {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            const lang = currentLanguage;
-            const camErr = I18N_TEXTS.camera_error_msg && I18N_TEXTS.camera_error_msg[lang] ? I18N_TEXTS.camera_error_msg[lang] : "Could not open camera.";
-            showWarningModal("Camera Access", camErr, "Please select an image file instead.");
-            fileInput.click();
+        if (isMobileDevice || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            if (expertCameraInput) {
+                expertCameraInput.value = "";
+                expertCameraInput.click();
+            } else {
+                fileInput.click();
+            }
             return;
         }
         try {
@@ -2343,8 +2386,13 @@ document.addEventListener("DOMContentLoaded", () => {
             cameraStream.srcObject = expertCameraStreamTrack;
             cameraOverlay.style.display = "flex";
         } catch (e) {
-            console.error(e);
-            fileInput.click();
+            console.warn("Webcam stream failed:", e);
+            if (expertCameraInput) {
+                expertCameraInput.value = "";
+                expertCameraInput.click();
+            } else {
+                fileInput.click();
+            }
         }
     }
 

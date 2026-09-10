@@ -267,7 +267,13 @@
                 <!-- Normal Upload Selection Buttons -->
                 <div class="farmer-upload-actions-grid" id="farmer-upload-buttons-view">
                     
-                    <!-- Hidden native file input -->
+                    <!-- Dedicated Camera Input with capture="environment" for phone camera -->
+                    <input type="file" id="farmer-camera-input" accept="image/*" capture="environment" style="display: none;">
+                    
+                    <!-- Dedicated Gallery / File Input without capture for gallery selection -->
+                    <input type="file" id="farmer-gallery-input" accept="image/*" style="display: none;">
+                    
+                    <!-- Legacy file input fallback -->
                     <input type="file" id="farmer-native-file-input" accept="image/*" style="display: none;">
                     
                     <!-- Option 1: Live Camera -->
@@ -762,6 +768,7 @@
                         <!-- Input Pill -->
                         <div class="input-pill-bar">
                             <input type="file" id="file-input" accept="image/*" style="display: none;">
+                            <input type="file" id="expert-camera-input" accept="image/*" capture="environment" style="display: none;">
                             
                             <!-- Attachment Paperclip -->
                             <button class="pill-utility-btn" id="attach-file-btn" title="Upload Leaf Specimen">
