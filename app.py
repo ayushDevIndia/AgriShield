@@ -724,7 +724,7 @@ HUMAN_AND_SYNTHETIC_OBJECTS = [
     "shoe", "boot", "sneaker", "sock", "glove", "hat", "cap", "helmet",
     "car", "truck", "automobile", "motorcycle", "bicycle", "bus", "cab", "trailer",
     "vehicle", "train", "airplane", "boat", "ship",
-    "laptop", "screen", "monitor", "keyboard", "mouse", "cellular_telephone", "phone",
+    "laptop", "screen", "monitor", "keyboard", "mouse", "cellular_telephone", "phone", "computer", "hand-held_computer", "hand_held_computer", "lab_coat",
     "desk", "chair", "sofa", "couch", "bed", "table", "lamp", "clock", "television",
     "book", "binder", "envelope", "paper", "pen", "pencil", "wallet", "bag", "backpack"
 ]
@@ -792,12 +792,12 @@ def is_valid_leaf_specimen(image):
             return False, f"Fruit or horticultural produce detected ({detected_fruit_type}). AgriShield is trained exclusively on crop leaf foliage and weeds, not fruits."
 
         # 3. LIVING BOTANICAL FOLIAGE PRESENCE
-        # True chlorophyll requires green channel dominance (g > r * 0.95 under warm light)
-        green_mask = (h_arr >= 18) & (h_arr <= 115) & (s_arr >= 10) & (v_arr >= 12)
+        # Genuine crop and weed foliage exhibits chlorophyll green saturation
+        green_mask = (h_arr >= 24) & (h_arr <= 105) & (s_arr >= 20) & (v_arr >= 22) & (g_128 >= r_128 * 0.90) & (g_128 >= b_128 * 0.85)
         green_ratio = float(np.sum(green_mask)) / float(green_mask.size)
         
-        if green_ratio < 0.008:
-            return False, "No botanical foliage detected. Please upload a clear photograph of a cotton leaf, corn leaf, or field weed specimen."
+        if green_ratio < 0.08:
+            return False, "No crop leaf or weed foliage detected. Please upload an authentic photograph of a crop leaf or field weed specimen."
 
         # 4. DEEP LEARNING IMAGENET OBJECT VERIFICATION
         validator = get_imagenet_validator()
