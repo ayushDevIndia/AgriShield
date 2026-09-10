@@ -690,9 +690,7 @@ FRUIT_AND_PRODUCE_OBJECTS = [
     # Vegetables, gourds & root crops
     "bell_pepper", "pepper", "cucumber", "tomato", "potato", "mashed_potato", "zucchini",
     "squash", "acorn_squash", "butternut_squash", "spaghetti_squash", "artichoke", "cardoon",
-    "head_cabbage", "cabbage", "broccoli", "cauliflower", "mushroom", "fungus", "agaric", "bolete",
-    # Harvested Corn parts (cobs/kernels vs foliage)
-    "ear", "corn"
+    "head_cabbage", "cabbage", "broccoli", "cauliflower", "mushroom", "fungus", "agaric", "bolete"
 ]
 
 # 2. Food & Culinary Items
@@ -715,7 +713,7 @@ ANIMAL_OBJECTS = [
 # 4. Flower Blossoms (When flower head dominates without weed leaf structure)
 FLOWER_DOMINANT_OBJECTS = [
     "daisy", "yellow_lady's_slipper", "rose", "tulip", "sunflower", "orchid", "petunia",
-    "dahlia", "carnation", "poppy", "pot", "flowerpot", "vase", "bouquet"
+    "dahlia", "carnation", "poppy", "vase", "bouquet"
 ]
 
 # 5. Humans & Synthetic Objects
@@ -768,7 +766,7 @@ def is_valid_leaf_specimen(image):
         flat_ratio = float(np.sum(grad < 1.0)) / float(grad.size)
         grad_mean = float(np.mean(grad))
         
-        if grad_mean < 3.8 or flat_ratio > 0.25:
+        if (grad_mean < 2.5 and flat_ratio > 0.40) or grad_mean < 1.8:
             return False, "Digital graphic, wallpaper, or non-photographic surface detected. Please upload an authentic photograph of a plant or crop leaf."
 
         # 2. DOMINANT FRUIT / NON-FOLIAGE COLOR PROFILE FILTER

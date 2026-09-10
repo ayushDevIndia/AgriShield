@@ -39,6 +39,19 @@
                     <i class="fa-solid fa-angles-left"></i>
                 </button>
             </div>
+
+            <!-- Sidebar Crop / Weed Suite Selector -->
+            <div class="sidebar-crop-section">
+                <span class="sidebar-crop-label"><i class="fa-solid fa-shield-virus"></i> Weed Target Crop</span>
+                <div class="sidebar-crop-pills">
+                    <button class="sidebar-crop-pill active" data-crop="Cotton" id="sidebar-crop-cotton">
+                        <i class="fa-solid fa-feather-pointed"></i> Cotton (13 Weeds)
+                    </button>
+                    <button class="sidebar-crop-pill" data-crop="Corn" id="sidebar-crop-corn">
+                        <i class="fa-solid fa-seedling"></i> Corn (5 Weeds)
+                    </button>
+                </div>
+            </div>
             
             <!-- Chat History / Previous scans list -->
             <div class="sidebar-history-container">
@@ -87,7 +100,19 @@
                     <button class="sidebar-open-btn" id="open-sidebar-btn" title="Open Sidebar">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <!-- ChatGPT-style model switcher dropdown -->
+                    
+                    <!-- Header Weed Crop Selector -->
+                    <div class="header-crop-selector" id="header-crop-selector">
+                        <span class="crop-sel-label"><i class="fa-solid fa-leaf"></i> Crop:</span>
+                        <button class="crop-header-btn active" data-crop="Cotton" id="header-btn-cotton" title="Select Cotton Weed Suite (13 Classes)">
+                            <i class="fa-solid fa-feather-pointed"></i> Cotton (13)
+                        </button>
+                        <button class="crop-header-btn" data-crop="Corn" id="header-btn-corn" title="Select Corn Weed Suite (5 Classes)">
+                            <i class="fa-solid fa-seedling"></i> Corn (5)
+                        </button>
+                    </div>
+
+                    <!-- Model switcher dropdown -->
                     <div class="model-dropdown-container">
                         <button class="model-dropdown-trigger" id="model-dropdown-btn" title="Switch Deep Learning Model">
                             <i class="fa-solid fa-wand-magic-sparkles model-trigger-sparkle"></i>
@@ -122,65 +147,137 @@
             <!-- CHAT CONVERSATION VIEWPORT -->
             <div class="chat-feed-container" id="chat-feed">
                 
-                <!-- Center Welcome Screen (Gemini & ChatGPT Inspired) -->
+                <!-- Center Welcome Screen (Weed Diagnostic & Crop Hub) -->
                 <div class="welcome-screen" id="welcome-screen">
-                    <div class="welcome-gemini-glow">
-                        <div class="gemini-sparkle-circle">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        </div>
-                    </div>
-
-                    <h1 class="gemini-greeting">Hello, <span class="shimmer-gradient-text">Researcher</span></h1>
-                    <h2 class="gemini-subheading">What crop or weed specimen would you like to diagnose today?</h2>
-                    
                     <div class="welcome-univ-pill">
                         <img src="/igu_seal.png?v=2" alt="IGU Emblem" class="welcome-univ-seal">
                         <span>Indira Gandhi University, Meerpur &bull; <strong>Department of Computer Science &amp; Agronomy</strong></span>
                     </div>
 
-                    <!-- Gemini Prompt Cards -->
-                    <div class="suggestion-grid">
-                        <div class="suggestion-card" data-action="upload-cotton">
-                            <div class="card-icon cotton-gradient"><i class="fa-solid fa-feather-pointed"></i></div>
-                            <div class="card-text">
-                                <div class="card-header-line">
-                                    <h4>Analyze Cotton (Gossypium)</h4>
-                                    <span class="card-chip">97.6% Acc</span>
+                    <div class="weed-column-header">
+                        <div class="weed-badge"><i class="fa-solid fa-shield-virus"></i> WEED CLASSIFICATION &amp; CROP DIAGNOSTIC SUITE</div>
+                        <h1 class="gemini-greeting">Weed Detection &amp; Agronomic Triage</h1>
+                        <p class="gemini-subheading">Select crop below to activate dedicated neural attention models and identify field weeds:</p>
+                    </div>
+
+                    <!-- TWO INTERACTIVE CROP COLUMNS ("Weed ka column bna kr usme se crop choose kre") -->
+                    <div class="weed-crop-grid" id="weed-crop-grid">
+                        
+                        <!-- COTTON WEED COLUMN -->
+                        <div class="weed-crop-card active" data-crop="Cotton" id="card-crop-cotton">
+                            <div class="crop-card-top">
+                                <div class="crop-card-badge-row">
+                                    <span class="crop-family-tag"><i class="fa-solid fa-feather-pointed"></i> Malvaceae</span>
+                                    <span class="crop-acc-chip">97.6% Acc &bull; Vision Mamba</span>
                                 </div>
-                                <p>Diagnose Bermuda grass, Purslane, or healthy crop leaves across 13 classes.</p>
+                                <div class="crop-card-title-wrap">
+                                    <h3>Cotton Crop Weeds (कपास)</h3>
+                                    <span class="crop-scientific">Gossypium hirsutum L.</span>
+                                </div>
+                            </div>
+                            
+                            <p class="crop-card-desc">Vision Mamba state-space neural models trained to differentiate healthy cotton foliage from 12 aggressive broadleaf &amp; grassy field weeds.</p>
+                            
+                            <div class="crop-card-weeds-box">
+                                <span class="weeds-box-title"><i class="fa-solid fa-list-check"></i> 13 Target Flora Classes:</span>
+                                <div class="weed-flora-tags">
+                                    <span class="flora-pill safe"><i class="fa-solid fa-circle-check"></i> Cotton (Healthy)</span>
+                                    <span class="flora-pill">Bermuda Grass (Doob)</span>
+                                    <span class="flora-pill">Purple Nutsedge (Motha)</span>
+                                    <span class="flora-pill">Morning Glory</span>
+                                    <span class="flora-pill">Slender Amaranth</span>
+                                    <span class="flora-pill">Carpetweed</span>
+                                    <span class="flora-pill">Jungle Rice</span>
+                                    <span class="flora-pill">+6 More</span>
+                                </div>
+                            </div>
+                            
+                            <div class="crop-card-footer">
+                                <button class="crop-choose-btn active" data-crop="Cotton">
+                                    <i class="fa-solid fa-circle-check"></i> Selected: Cotton Weeds
+                                </button>
                             </div>
                         </div>
 
-                        <div class="suggestion-card" data-action="upload-corn">
-                            <div class="card-icon corn-gradient"><i class="fa-solid fa-seedling"></i></div>
-                            <div class="card-text">
-                                <div class="card-header-line">
-                                    <h4>Analyze Corn (Zea mays)</h4>
-                                    <span class="card-chip">99.8% Acc</span>
+                        <!-- CORN WEED COLUMN -->
+                        <div class="weed-crop-card" data-crop="Corn" id="card-crop-corn">
+                            <div class="crop-card-top">
+                                <div class="crop-card-badge-row">
+                                    <span class="crop-family-tag"><i class="fa-solid fa-seedling"></i> Poaceae</span>
+                                    <span class="crop-acc-chip">99.8% Acc &bull; CBAM Attention</span>
                                 </div>
-                                <p>Scan maize foliage with CBAM attention to detect Bluegrass, Sedge, or Thistle.</p>
+                                <div class="crop-card-title-wrap">
+                                    <h3>Corn / Maize Weeds (मक्का)</h3>
+                                    <span class="crop-scientific">Zea mays L.</span>
+                                </div>
+                            </div>
+                            
+                            <p class="crop-card-desc">Dual Spatial &amp; Channel Attention (CBAM) models calibrated for maize canopy foliage and competitive annual weed identification.</p>
+                            
+                            <div class="crop-card-weeds-box">
+                                <span class="weeds-box-title"><i class="fa-solid fa-list-check"></i> 5 Target Flora Classes:</span>
+                                <div class="weed-flora-tags">
+                                    <span class="flora-pill safe"><i class="fa-solid fa-circle-check"></i> Corn Foliage</span>
+                                    <span class="flora-pill">Bluegrass</span>
+                                    <span class="flora-pill">Common Buckwheat</span>
+                                    <span class="flora-pill">Fall Panicgrass</span>
+                                    <span class="flora-pill">Large Crabgrass / Thistle</span>
+                                </div>
+                            </div>
+                            
+                            <div class="crop-card-footer">
+                                <button class="crop-choose-btn" data-crop="Corn">
+                                    <i class="fa-regular fa-circle"></i> Select Corn Weeds
+                                </button>
                             </div>
                         </div>
 
-                        <div class="suggestion-card" data-action="upload-weed">
-                            <div class="card-icon weed-gradient"><i class="fa-solid fa-shield-virus"></i></div>
-                            <div class="card-text">
-                                <div class="card-header-line">
-                                    <h4>Invasive Weed Triage</h4>
-                                    <span class="card-chip">Triple Shield</span>
+                    </div>
+
+                    <!-- DIRECT SPECIMEN SCAN CONSOLE ON MAIN PAGE ("bahr page pr") -->
+                    <div class="direct-scan-console" id="direct-scan-console">
+                        <div class="console-header-line">
+                            <div class="console-target-info">
+                                <span class="console-target-label">Current Weed Target:</span>
+                                <strong class="console-target-name" id="console-target-display">🌿 Cotton Weeds &bull; InceptionV3 + Vision Mamba</strong>
+                            </div>
+                            <button class="console-cam-btn" id="direct-cam-btn" title="Open Live Camera">
+                                <i class="fa-solid fa-camera"></i> Live Camera
+                            </button>
+                        </div>
+
+                        <!-- Dropzone Box on main page -->
+                        <div class="direct-dropzone" id="direct-dropzone">
+                            <input type="file" id="direct-file-input" accept="image/png,image/jpeg,image/jpg" style="display: none;">
+                            <div class="dropzone-inner">
+                                <div class="dropzone-icon-ring">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
                                 </div>
-                                <p>Automatic botanical risk indexing, herbicide prescriptions &amp; prevention tips.</p>
+                                <h4>Drop Leaf Specimen to Scan Weeds</h4>
+                                <p>Drag &amp; drop leaf photo here, or <span class="browse-link">browse files</span></p>
+                                <div class="dropzone-hints">
+                                    <span><i class="fa-solid fa-check"></i> Field Leaves &amp; Seedlings</span>
+                                    <span><i class="fa-solid fa-ban"></i> Fruits/Non-Plants Blocked</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="suggestion-card" data-action="open-camera">
-                            <div class="card-icon cam-gradient"><i class="fa-solid fa-camera"></i></div>
-                            <div class="card-text">
-                                <div class="card-header-line">
-                                    <h4>Live Camera Scouting</h4>
-                                    <span class="card-chip">Realtime</span>
-                                </div>
-                                <p>Capture an instant live leaf photo using your phone or laptop camera.</p>
+                        <!-- 1-Click Quick Demo Tests -->
+                        <div class="quick-test-bar">
+                            <span class="quick-test-label"><i class="fa-solid fa-flask"></i> 1-Click Demo Tests:</span>
+                            <div class="quick-test-chips">
+                                <button class="test-chip-btn" data-sample="/samples/weed_specimen.jpg" data-crop="Cotton" title="Test authentic field weed on soil">
+                                    <i class="fa-solid fa-shield-virus"></i> Test Weed Specimen
+                                </button>
+                                <button class="test-chip-btn" data-sample="/samples/cotton_leaf.jpg" data-crop="Cotton" title="Test healthy cotton crop leaf">
+                                    <i class="fa-solid fa-feather-pointed"></i> Test Cotton Leaf
+                                </button>
+                                <button class="test-chip-btn" data-sample="/samples/corn_leaf.jpg" data-crop="Corn" title="Test maize corn leaf">
+                                    <i class="fa-solid fa-seedling"></i> Test Corn Leaf
+                                </button>
+                                <button class="test-chip-btn reject-demo" data-sample="/samples/fruit_rejection.jpg" data-crop="Cotton" title="Demonstrate botanical fruit rejection">
+                                    <i class="fa-solid fa-ban"></i> Test Fruit Rejection (Apple)
+                                </button>
                             </div>
                         </div>
                     </div>

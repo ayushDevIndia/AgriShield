@@ -241,15 +241,78 @@ document.addEventListener("DOMContentLoaded", () => {
         modelDropdownMenu.classList.remove("active");
     });
 
+    let selectedCrop = "Cotton";
+
+    function updateConsoleTargetDisplay() {
+        const display = document.getElementById("console-target-display");
+        if (!display) return;
+        const currentModel = activeModelList.find(m => m.id === selectedModelId);
+        const modelName = currentModel ? (currentModel.champion ? `${currentModel.name} ★` : currentModel.name) : selectedModelId;
+        if (selectedCrop === "Cotton") {
+            display.innerHTML = `🌿 Cotton Weeds (13 Classes) &bull; <strong>${modelName}</strong>`;
+        } else {
+            display.innerHTML = `🌽 Corn Weeds (5 Classes) &bull; <strong>${modelName}</strong>`;
+        }
+    }
+
+    function syncCropUI(crop) {
+        selectedCrop = crop;
+        // Header buttons
+        const hCotton = document.getElementById("header-btn-cotton");
+        const hCorn = document.getElementById("header-btn-corn");
+        if (hCotton) hCotton.classList.toggle("active", crop === "Cotton");
+        if (hCorn) hCorn.classList.toggle("active", crop === "Corn");
+
+        // Sidebar buttons
+        const sCotton = document.getElementById("sidebar-crop-cotton");
+        const sCorn = document.getElementById("sidebar-crop-corn");
+        if (sCotton) sCotton.classList.toggle("active", crop === "Cotton");
+        if (sCorn) sCorn.classList.toggle("active", crop === "Corn");
+
+        // Main weed crop cards
+        const cCotton = document.getElementById("card-crop-cotton");
+        const cCorn = document.getElementById("card-crop-corn");
+        if (cCotton) cCotton.classList.toggle("active", crop === "Cotton");
+        if (cCorn) cCorn.classList.toggle("active", crop === "Corn");
+
+        const btnCotton = cCotton ? cCotton.querySelector(".crop-choose-btn") : null;
+        const btnCorn = cCorn ? cCorn.querySelector(".crop-choose-btn") : null;
+        if (btnCotton) {
+            btnCotton.innerHTML = crop === "Cotton" ? '<i class="fa-solid fa-circle-check"></i> Selected: Cotton Weeds' : '<i class="fa-regular fa-circle"></i> Select Cotton Weeds';
+            btnCotton.classList.toggle("active", crop === "Cotton");
+        }
+        if (btnCorn) {
+            btnCorn.innerHTML = crop === "Corn" ? '<i class="fa-solid fa-circle-check"></i> Selected: Corn Weeds' : '<i class="fa-regular fa-circle"></i> Select Corn Weeds';
+            btnCorn.classList.toggle("active", crop === "Corn");
+        }
+        updateConsoleTargetDisplay();
+    }
+
+    function setSelectedCrop(crop) {
+        syncCropUI(crop);
+        // Automatically switch to the best champion model for this crop
+        if (activeModelList && activeModelList.length > 0) {
+            const cropModels = activeModelList.filter(m => m.crop === crop);
+            const champ = cropModels.find(m => m.champion) || cropModels[0];
+            if (champ && champ.id !== selectedModelId) {
+                setActiveModel(champ.id);
+            }
+        }
+    }
+
     function setActiveModel(modelId) {
         selectedModelId = modelId;
         const model = activeModelList.find(m => m.id === modelId);
         if (model) {
+            if (model.crop && model.crop !== selectedCrop) {
+                syncCropUI(model.crop);
+            }
             activeModelName.textContent = model.champion ? `${model.name} ★` : model.name;
             const badgeText = document.getElementById("input-crop-badge-text");
             if (badgeText) {
                 badgeText.textContent = model.crop === "Cotton" ? "Cotton Mamba" : "Corn CBAM";
             }
+            updateConsoleTargetDisplay();
         }
         document.querySelectorAll(".model-menu-item").forEach(item => {
             if (item.dataset.id === modelId) {
@@ -905,30 +968,113 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".history-item").forEach(i => i.classList.remove("active"));
     });
 
-    // Suggestion card clicks (Gemini / ChatGPT smart actions)
-    document.querySelectorAll(".suggestion-card").forEach(card => {
-        card.addEventListener("click", () => {
-            const action = card.dataset.action;
-            if (action === "upload-cotton") {
-                setActiveModel("InceptionV3_Cotton_Mamba");
-                chatTextInput.value = "Diagnose Cotton leaf specimen with Vision Mamba...";
-                fileInput.value = "";
-                fileInput.click();
-            } else if (action === "upload-corn") {
-                setActiveModel("Untitled65");
-                chatTextInput.value = "Diagnose Corn (Maize) leaf specimen with CBAM attention...";
-                fileInput.value = "";
-                fileInput.click();
-            } else if (action === "upload-weed") {
-                setActiveModel("InceptionV3_Cotton_Mamba");
-                chatTextInput.value = "Identify invasive weed specimen and management advice...";
-                fileInput.value = "";
-                fileInput.click();
-            } else if (action === "open-camera") {
-                openCamera();
-            } else {
-                fileInput.value = "";
-                fileInput.click();
+    // ============================================================
+    // WEED CROP SELECTION CONTROLLERS (Header, Sidebar & Main Page)
+    // ============================================================
+    // 1. Header Buttons
+    const headerBtnCotton = document.getElementById("header-btn-cotton");
+    const headerBtnCorn = document.getElementById("header-btn-corn");
+    if (headerBtnCotton) headerBtnCotton.addEventListener("click", () => setSelectedCrop("Cotton"));
+    if (headerBtnCorn) headerBtnCorn.addEventListener("click", () => setSelectedCrop("Corn"));
+
+    // 2. Sidebar Buttons
+    const sidebarBtnCotton = document.getElementById("sidebar-crop-cotton");
+    const sidebarBtnCorn = document.getElementById("sidebar-crop-corn");
+    if (sidebarBtnCotton) sidebarBtnCotton.addEventListener("click", () => setSelectedCrop("Cotton"));
+    if (sidebarBtnCorn) sidebarBtnCorn.addEventListener("click", () => setSelectedCrop("Corn"));
+
+    // 3. Main Page Crop Cards
+    const cardCropCotton = document.getElementById("card-crop-cotton");
+    const cardCropCorn = document.getElementById("card-crop-corn");
+    if (cardCropCotton) cardCropCotton.addEventListener("click", () => setSelectedCrop("Cotton"));
+    if (cardCropCorn) cardCropCorn.addEventListener("click", () => setSelectedCrop("Corn"));
+
+    // Direct Specimen Dropzone on Main Page
+    const directDropzone = document.getElementById("direct-dropzone");
+    const directFileInput = document.getElementById("direct-file-input");
+    const directCamBtn = document.getElementById("direct-cam-btn");
+
+    if (directDropzone && directFileInput) {
+        directDropzone.addEventListener("click", (e) => {
+            e.stopPropagation();
+            directFileInput.value = "";
+            directFileInput.click();
+        });
+
+        directFileInput.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) {
+                loadSpecimenImage(e.target.files[0]);
+                triggerScanDiagnosis();
+            }
+        });
+
+        directDropzone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            directDropzone.classList.add("dragover");
+        });
+
+        directDropzone.addEventListener("dragleave", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            directDropzone.classList.remove("dragover");
+        });
+
+        directDropzone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            directDropzone.classList.remove("dragover");
+            if (e.dataTransfer.files.length > 0) {
+                loadSpecimenImage(e.dataTransfer.files[0]);
+                triggerScanDiagnosis();
+            }
+        });
+    }
+
+    if (directCamBtn) {
+        directCamBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            openCamera();
+        });
+    }
+
+    // 1-Click Quick Demo Test Chips (For Professors & Evaluators)
+    document.querySelectorAll(".test-chip-btn").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const sampleUrl = btn.dataset.sample;
+            const targetCrop = btn.dataset.crop;
+            
+            if (targetCrop && targetCrop !== selectedCrop) {
+                setSelectedCrop(targetCrop);
+            }
+
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(sampleUrl);
+                if (!response.ok) throw new Error("Sample file missing");
+                const blob = await response.blob();
+                const filename = sampleUrl.split("/").pop();
+                const sampleFile = new File([blob], filename, { type: blob.type || "image/jpeg" });
+                
+                // Stage image
+                loadSpecimenImage(sampleFile);
+
+                // Small delay so thumbnail renders before triggering scan
+                setTimeout(() => {
+                    triggerScanDiagnosis();
+                    btn.innerHTML = origHtml;
+                    btn.disabled = false;
+                }, 300);
+            } catch (err) {
+                console.error("Demo sample error:", err);
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+                alert("Demo sample could not be loaded: " + err.message);
             }
         });
     });
