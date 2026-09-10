@@ -1635,6 +1635,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (viewName === "landing") {
+            document.body.style.overflowY = "auto";
+            document.body.style.overflowX = "hidden";
             if (viewLanding) {
                 viewLanding.style.display = "block";
                 viewLanding.classList.add("active");
@@ -1643,6 +1645,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (globalReturnHomeBtn) globalReturnHomeBtn.style.display = "none";
             window.scrollTo({ top: 0, behavior: "smooth" });
         } else if (viewName === "farmer") {
+            document.body.style.overflowY = "auto";
+            document.body.style.overflowX = "hidden";
             if (viewFarmer) {
                 viewFarmer.style.display = "block";
                 viewFarmer.classList.add("active");
@@ -1654,6 +1658,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (globalReturnHomeBtn) globalReturnHomeBtn.style.display = "flex";
             window.scrollTo({ top: 0, behavior: "smooth" });
         } else if (viewName === "expert") {
+            document.body.style.overflow = "hidden";
             if (viewExpert) {
                 viewExpert.style.display = "block";
                 viewExpert.classList.add("active");

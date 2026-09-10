@@ -49,13 +49,20 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+    width: 100%;
+    min-height: 100%;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     color: var(--text-primary);
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
     transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -120,9 +127,8 @@ h1, h2, h3, h4, h5, h6 {
 /* Chat App Container Grid */
 .chat-app-container {
     display: flex;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
+    width: 100%;
+    height: 100%;
     position: relative;
     overflow: hidden;
 }
@@ -2376,7 +2382,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2000;
     padding: 20px;
     animation: fadeIn 0.2s ease;
 }
@@ -2719,7 +2725,7 @@ h1, h2, h3, h4, h5, h6 {
 /* 3. Landing Hero View */
 #view-landing {
     min-height: calc(100vh - 64px);
-    overflow-y: auto;
+    overflow: visible;
     padding: 40px 20px 60px;
 }
 
@@ -2968,7 +2974,7 @@ h1, h2, h3, h4, h5, h6 {
 /* 4. Farmer Hub View */
 #view-farmer {
     min-height: calc(100vh - 64px);
-    overflow-y: auto;
+    overflow: visible;
     padding: 30px 20px 60px;
 }
 
