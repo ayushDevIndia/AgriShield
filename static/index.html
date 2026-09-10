@@ -190,7 +190,7 @@
                 <!-- CROP 1: COTTON (कपास) -->
                 <div class="farmer-crop-card" id="farmer-card-cotton" data-crop="Cotton" tabindex="0">
                     <div class="farmer-card-img-wrapper">
-                        <img src="/samples/cotton_leaf.jpg" alt="Cotton Crop Leaf" class="farmer-crop-photo">
+                        <img src="/samples/cotton_plant.jpg" alt="Cotton Crop Plant with White Cotton" class="farmer-crop-photo">
                         <div class="farmer-card-overlay-badge">
                             <i class="fa-solid fa-feather-pointed"></i>
                             <span data-i18n="cotton_badge">कपास (Cotton)</span>
@@ -226,7 +226,7 @@
                 <!-- CROP 2: CORN (मक्का) -->
                 <div class="farmer-crop-card" id="farmer-card-corn" data-crop="Corn" tabindex="0">
                     <div class="farmer-card-img-wrapper">
-                        <img src="/samples/corn_leaf.jpg" alt="Corn Crop Leaf" class="farmer-crop-photo">
+                        <img src="/samples/corn_plant.jpg" alt="Corn Crop Plant with Golden Cob" class="farmer-crop-photo">
                         <div class="farmer-card-overlay-badge corn-badge">
                             <i class="fa-solid fa-seedling"></i>
                             <span data-i18n="corn_badge">मक्का (Corn / Maize)</span>
@@ -971,6 +971,26 @@
                     </table>
                 </div>
             </div>
+    <!-- ============================================================
+         8. LOCALIZED WARNING & SPECIMEN REJECTION MODAL
+         ============================================================ -->
+    <div class="modal-backdrop" id="warning-modal" style="display: none;">
+        <div class="modal-card warning-modal-card">
+            <div class="warning-icon-circle">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="warning-modal-title" id="warning-modal-title" data-i18n="warning_title">⚠️ गैर-पादप फोटो अस्वीकृत</h3>
+            <p class="warning-modal-desc" id="warning-modal-desc">
+                आपने फल/सब्जी या अन्य वस्तु की फोटो अपलोड की है। AgroweedNet केवल कपास व मक्का के पौधों और खरपतवारों की पत्तियों की पहचान करता है।
+            </p>
+            <div class="warning-guide-box">
+                <i class="fa-solid fa-lightbulb"></i>
+                <span id="warning-modal-hint" data-i18n="warning_action_hint">कृपया खेत में जाकर केवल पौधे या खरपतवार की हरी पत्ती की साफ फोटो लें।</span>
+            </div>
+            <button class="warning-dismiss-btn" id="dismiss-warning-btn">
+                <i class="fa-solid fa-check"></i>
+                <span id="warning-modal-btn-text" data-i18n="warning_btn_ok">समझ गया / दोबारा फोटो लें</span>
+            </button>
         </div>
     </div>
 

@@ -431,6 +431,48 @@ document.addEventListener("DOMContentLoaded", () => {
     "pa": "ਚੰਗੀ ਧੁੱਪ ਵਿੱਚ ਪੱਤੇ ਦੀ ਸਾਫ਼ ਅਤੇ ਨੇੜਿਓਂ ਫੋਟੋ ਲਓ। ਮਿੱਟੀ ਜਾਂ ਫ਼ਲ ਦੀ ਫੋਟੋ ਨਾ ਲਓ ਤਾਂ ਜੋ ਮਾਡਲ ਬਿਲਕੁਲ ਸਹੀ ਨਤੀਜਾ ਦੇ ਸਕੇ।",
     "gu": "કુદરતી સૂર્યપ્રકાશમાં પાંદડાની સ્પષ્ટ અને નજીકથી ફોટો લો. માટી અથવા ફળની ફોટો ન લો જેથી મોડેલ ચોક્કસ પરિણામ આપી શકે.",
     "mr": "नैसर्गिक सूर्यप्रकाशात पानाचा स्पष्ट आणि जवळून फोटो घ्या. माती, दगड किंवा फळांचे फोटो टाळा जेणेकरून अचूक निदान मिळेल."
+  },
+  "warning_title": {
+    "hi": "⚠️ गैर-पादप फोटो अस्वीकृत (Non-Leaf Detected)",
+    "en": "⚠️ Botanical Specimen Rejected (Non-Leaf Detected)",
+    "pa": "⚠️ ਗੈਰ-ਪੌਦਾ ਫੋਟੋ ਅਸਵੀਕਾਰ (ਪੱਤਾ ਨਹੀਂ ਹੈ)",
+    "gu": "⚠️ બિન-વનસ્પતિ ફોટો અસ્વીકાર (પાંદડું નથી)",
+    "mr": "⚠️ गैर-वनस्पती फोटो नाकारला (पानाचा फोटो नाही)"
+  },
+  "warning_fruit_msg": {
+    "hi": "आपने फल/सब्जी अथवा गैर-पादप वस्तु की फोटो दी है। AgroweedNet केवल कपास व मक्का के पौधों और खरपतवारों की हरी पत्तियों की पहचान करता है, फलों की नहीं।",
+    "en": "Fruit, produce, or non-leaf object detected. AgroweedNet is an agronomic AI trained exclusively on vegetative crop leaves and field weeds, strictly rejecting non-plants to prevent misdiagnosis.",
+    "pa": "ਤੁਸੀਂ ਫ਼ਲ/ਸਬਜ਼ੀ ਜਾਂ ਹੋਰ ਵਸਤੂ ਦੀ ਫੋਟੋ ਦਿੱਤੀ ਹੈ। AgroweedNet ਕੇਵਲ ਕਪਾਹ ਅਤੇ ਮੱਕੀ ਦੇ ਪੱਤਿਆਂ ਅਤੇ ਨਦੀਨਾਂ ਦੀ ਜਾਂਚ ਲਈ ਬਣਿਆ ਹੈ।",
+    "gu": "તમે ફળ/શાકભાજી અથવા અન્ય વસ્તુનો ફોટો આપ્યો છે. AgroweedNet માત્ર કપાસ અને મકાઈના પાંદડા તેમજ નીંદણની તપાસ માટે તાલીમબદ્ધ છે.",
+    "mr": "तुम्ही फळ/भाजी किंवा इतर वस्तूचा फोटो दिला आहे. AgroweedNet केवळ कापूस, मका आणि तणांच्या पानांची तपासणी करण्यासाठी तयार केले आहे."
+  },
+  "warning_action_hint": {
+    "hi": "सलाह: कृपया खेत में पौधे अथवा खरपतवार की हरी पत्ती की नजदीक से साफ फोटो लें।",
+    "en": "Advice: Please capture a clean, close-up photograph of an authentic green crop leaf or field weed.",
+    "pa": "ਸਲਾਹ: ਕਿਰਪਾ ਕਰਕੇ ਖੇਤ ਵਿੱਚੋਂ ਪੌਦੇ ਜਾਂ ਨਦੀਨ ਦੇ ਹਰੇ ਪੱਤੇ ਦੀ ਸਾਫ਼ ਫੋਟੋ ਲਓ।",
+    "gu": "સલાહ: કૃપા કરીને ખેતરમાંથી પાક અથવા નીંદણના લીલા પાંદડાનો સ્પષ્ટ ફોટો લો.",
+    "mr": "सल्ला: कृपया शेतातून वनस्पती किंवा तणाच्या हिरव्या पानाचा स्पष्ट फोटो घ्या."
+  },
+  "warning_btn_ok": {
+    "hi": "समझ गया / दोबारा फोटो लें",
+    "en": "Understood / Retake Photo",
+    "pa": "ਸਮਝ ਗਿਆ / ਦੁਬਾਰਾ ਫੋਟੋ ਲਓ",
+    "gu": "સમજાયું / ફરીથી ફોટો લો",
+    "mr": "समजले / पुन्हा फोटो घ्या"
+  },
+  "camera_error_msg": {
+    "hi": "कैमरा चालू नहीं हो सका। कृपया अपनी गैलरी से फोटो चुनें या कैमरा अनुमति जांचें।",
+    "en": "Could not access live camera. Please select a photo from your gallery or check browser permissions.",
+    "pa": "ਕੈਮਰਾ ਚਾਲੂ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਗੈਲਰੀ ਵਿੱਚੋਂ ਫੋਟੋ ਚੁਣੋ।",
+    "gu": "કેમેરો ચાલુ થઈ શક્યો નથી. કૃપા કરીને ગેલેરીમાંથી ફોટો પસંદ કરો.",
+    "mr": "कॅमेरा सुरू होऊ शकला नाही. कृपया गॅलरीतून फोटो निवडा."
+  },
+  "server_offline_msg": {
+    "hi": "सर्वर से संपर्क नहीं हो सका। कृपया सुनिश्चित करें कि AI बैकएंड सक्रिय है।",
+    "en": "Cannot connect to server. Please ensure the AI backend server is active.",
+    "pa": "ਸਰਵਰ ਨਾਲ ਸੰਪਰਕ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ AI ਬੈਕਐਂਡ ਦੀ ਜਾਂਚ ਕਰੋ।",
+    "gu": "સર્વર સાથે સંપર્ક થઈ શક્યો નથી. કૃપા કરીને તપાસો કે AI બેકએન્ડ ચાલુ છે.",
+    "mr": "सर्व्हरशी संपर्क होऊ शकला नाही. कृपया AI बॅकएंड चालू असल्याची खात्री करा."
   }
 };
     const BOTANICAL_ADVICE = {
@@ -1510,6 +1552,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const farmerResultRescanBtn = document.getElementById("farmer-result-rescan-btn");
     const farmerResultHomeBtn = document.getElementById("farmer-result-home-btn");
 
+    // Warning & Rejection Modal Elements
+    const warningModal = document.getElementById("warning-modal");
+    const warningModalTitle = document.getElementById("warning-modal-title");
+    const warningModalDesc = document.getElementById("warning-modal-desc");
+    const warningModalHint = document.getElementById("warning-modal-hint");
+    const warningModalBtnText = document.getElementById("warning-modal-btn-text");
+    const dismissWarningBtn = document.getElementById("dismiss-warning-btn");
+
     // 4. MULTI-LANGUAGE ENGINE
     function applyLanguage(lang) {
         currentLanguage = lang;
@@ -1542,7 +1592,34 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize Language
     applyLanguage(currentLanguage);
 
-    // 5. VIEW NAVIGATION CONTROLLER
+    // 5. LOCALIZED WARNING MODAL CONTROLLER
+    function showWarningModal(customTitle, customDesc, customHint) {
+        const lang = currentLanguage;
+        if (warningModalTitle) {
+            warningModalTitle.innerText = customTitle || (I18N_TEXTS.warning_title && I18N_TEXTS.warning_title[lang] ? I18N_TEXTS.warning_title[lang] : "⚠️ गैर-पादप फोटो अस्वीकृत");
+        }
+        if (warningModalDesc) {
+            warningModalDesc.innerText = customDesc || (I18N_TEXTS.warning_fruit_msg && I18N_TEXTS.warning_fruit_msg[lang] ? I18N_TEXTS.warning_fruit_msg[lang] : "कृपया केवल खेत की पत्ती की फोटो दें।");
+        }
+        if (warningModalHint) {
+            warningModalHint.innerText = customHint || (I18N_TEXTS.warning_action_hint && I18N_TEXTS.warning_action_hint[lang] ? I18N_TEXTS.warning_action_hint[lang] : "सलाह: पौधे अथवा खरपतवार की हरी पत्ती की साफ फोटो लें।");
+        }
+        if (warningModalBtnText) {
+            warningModalBtnText.innerText = (I18N_TEXTS.warning_btn_ok && I18N_TEXTS.warning_btn_ok[lang]) ? I18N_TEXTS.warning_btn_ok[lang] : "समझ गया / दोबारा फोटो लें";
+        }
+        if (warningModal) {
+            warningModal.style.display = "flex";
+        }
+    }
+
+    if (dismissWarningBtn) {
+        dismissWarningBtn.addEventListener("click", () => {
+            if (warningModal) warningModal.style.display = "none";
+            openFarmerCropModal(activeFarmerCrop);
+        });
+    }
+
+    // 6. VIEW NAVIGATION CONTROLLER
     function showView(viewName) {
         if (viewLanding) {
             viewLanding.style.display = "none";
@@ -1609,18 +1686,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 6. FARMER FLOW: CROP SELECTION & UPLOAD MODAL
+    // 7. FARMER FLOW: CROP SELECTION & UPLOAD MODAL
     function openFarmerCropModal(crop) {
         activeFarmerCrop = crop;
         if (farmerModalCropIcon) farmerModalCropIcon.innerText = crop === "Cotton" ? "🌿" : "🌽";
         
         const isHi = currentLanguage === "hi";
         if (crop === "Cotton") {
-            if (farmerUploadModalTitle) farmerUploadModalTitle.innerText = isHi ? "कपास खरपतवार की फोटो दें" : "Upload Cotton Leaf Specimen";
+            if (farmerUploadModalTitle) farmerUploadModalTitle.innerText = isHi ? "कपास खरपतवार की फोटो दें" : (currentLanguage === "pa" ? "ਕਪਾਹ ਨਦੀਨ ਦੀ ਫੋਟੋ ਦਿਓ" : "Upload Cotton Leaf Specimen");
             if (farmerUploadModalSub) farmerUploadModalSub.innerText = isHi ? "कैमरा से फोटो खींचें या गैलरी से चुनें" : "Capture via Camera or Select from Gallery";
             if (farmerDemoCropBtn) farmerDemoCropBtn.setAttribute("data-sample", "/samples/cotton_leaf.jpg");
         } else {
-            if (farmerUploadModalTitle) farmerUploadModalTitle.innerText = isHi ? "मक्का खरपतवार की फोटो दें" : "Upload Corn Leaf Specimen";
+            if (farmerUploadModalTitle) farmerUploadModalTitle.innerText = isHi ? "मक्का खरपतवार की फोटो दें" : (currentLanguage === "pa" ? "ਮੱਕੀ ਨਦੀਨ ਦੀ ਫੋਟੋ ਦਿਓ" : "Upload Corn Leaf Specimen");
             if (farmerUploadModalSub) farmerUploadModalSub.innerText = isHi ? "कैमरा से फोटो खींचें या गैलरी से चुनें" : "Capture via Camera or Select from Gallery";
             if (farmerDemoCropBtn) farmerDemoCropBtn.setAttribute("data-sample", "/samples/corn_leaf.jpg");
         }
@@ -1660,7 +1737,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (farmerChoiceCamBtn) {
         farmerChoiceCamBtn.addEventListener("click", async () => {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert("Camera Note: Direct webcam requires localhost or HTTPS. Opening gallery instead.");
+                const lang = currentLanguage;
+                const camErr = I18N_TEXTS.camera_error_msg && I18N_TEXTS.camera_error_msg[lang] ? I18N_TEXTS.camera_error_msg[lang] : "Could not open camera.";
+                showWarningModal("📷 Camera Note", camErr, "Please choose an image from your files / gallery.");
                 farmerNativeFileInput.click();
                 return;
             }
@@ -1675,7 +1754,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 farmerCameraContainer.style.display = "flex";
             } catch (err) {
                 console.error("Camera access failed:", err);
-                alert("Could not start camera feed. Opening gallery selector instead.");
+                const lang = currentLanguage;
+                const camErr = I18N_TEXTS.camera_error_msg && I18N_TEXTS.camera_error_msg[lang] ? I18N_TEXTS.camera_error_msg[lang] : "Could not open camera.";
+                showWarningModal("📷 Camera Error", camErr, "Opening gallery selector instead.");
                 farmerNativeFileInput.click();
             }
         });
@@ -1755,11 +1836,11 @@ document.addEventListener("DOMContentLoaded", () => {
             handleFarmerSpecimenSubmit(file);
         } catch (err) {
             console.error("Demo load error:", err);
-            alert("Could not load demo sample. Please choose an image from your device.");
+            showWarningModal("Demo Error", "Could not load demo sample. Please choose an image from your device.", "Select an image from gallery.");
         }
     }
 
-    // 7. AUTOMATIC CHAMPION INFERENCE & 5-POINT RESULT POPUP
+    // 8. AUTOMATIC CHAMPION INFERENCE & 5-POINT RESULT POPUP
     async function handleFarmerSpecimenSubmit(file) {
         const championModel = activeFarmerCrop === "Cotton" 
             ? "InceptionV3_Cotton_Mamba" 
@@ -1795,10 +1876,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (result.success) {
                 renderFarmerDiagnosisResult(result, championModel, file);
             } else if (result.is_leaf === false) {
-                alert(`⚠️ गैर-पादप फोटो अस्वीकृत:
-${result.message || "कृपया केवल खेत की हरी पत्ती या पौधे की साफ फोटो दें।"}`);
+                const lang = currentLanguage;
+                const title = I18N_TEXTS.warning_title && I18N_TEXTS.warning_title[lang] ? I18N_TEXTS.warning_title[lang] : "⚠️ गैर-पादप फोटो अस्वीकृत";
+                const desc = I18N_TEXTS.warning_fruit_msg && I18N_TEXTS.warning_fruit_msg[lang] ? I18N_TEXTS.warning_fruit_msg[lang] : result.message;
+                const hint = I18N_TEXTS.warning_action_hint && I18N_TEXTS.warning_action_hint[lang] ? I18N_TEXTS.warning_action_hint[lang] : result.suggestion;
+                showWarningModal(title, desc, hint);
             } else {
-                alert(`जांच त्रुटि: ${result.error || "मॉडल परिणाम नहीं दे सका।"}`);
+                showWarningModal("Diagnosis Error", result.error || "Model could not generate prediction.", "Please check leaf image quality.");
             }
         } catch (err) {
             console.error("Inference failed:", err);
@@ -1806,7 +1890,9 @@ ${result.message || "कृपया केवल खेत की हरी प
             farmerAnalyzingState.style.display = "none";
             farmerUploadButtonsView.style.display = "grid";
             farmerModalDropzone.style.display = "block";
-            alert("सर्वर से संपर्क नहीं हो सका। कृपया सुनिश्चित करें कि app.py चालू है।");
+            const lang = currentLanguage;
+            const offlineMsg = I18N_TEXTS.server_offline_msg && I18N_TEXTS.server_offline_msg[lang] ? I18N_TEXTS.server_offline_msg[lang] : "Cannot connect to server. Ensure app.py is running.";
+            showWarningModal("Server Offline", offlineMsg, "Please ensure Python Flask app.py is running.");
         }
     }
 
@@ -1828,7 +1914,7 @@ ${result.message || "कृपया केवल खेत की हरी प
                 p1: { hi: "अनुशंसित शाकनाशी का उचित मात्रा में छिड़काव करें।", en: "Apply recommended selective herbicide dosage.", pa: "ਸਿਫਾਰਸ਼ ਕੀਤੀ ਨਦੀਨਨਾਸ਼ਕ ਛਿੜਕੋ।", gu: "ભલામણ કરેલ દવા છાંટો.", mr: "शिफारस केलेले तणनाशक फवारा." },
                 p2: { hi: "खरपतवार की प्रारंभिक अवस्था में ही छिड़काव करें।", en: "Treat at early seedling stage.", pa: "ਸ਼ੁਰੂਆਤੀ ਅਵਸਥਾ ਵਿੱਚ ਸਪਰੇਅ ਕਰੋ।", gu: "શરૂઆતની અવસ્થામાં જ છંટકાવ કરવો.", mr: "सुरुवातीच्या अवस्थेतच फवारणी करा." },
                 p3: { hi: "कतारों के बीच यांत्रिक निराई-गुड़ाई करें।", en: "Inter-row mechanical tillage.", pa: "ਕਤਾਰਾਂ ਵਿੱਚ ਗੋਡੀ ਕਰੋ।", gu: "હાર વચ્ચે આંતરખેડ કરો.", mr: "ओळींमध्ये खुरपणी करा." },
-                p4: { hi: "150-200 लीटर पानी प्रति एकड़ में एकसमान छिड़काव करें।", en: "Use 150-200 L water/acre.", pa: "150-200 ਲੀਟਰ ਪਾਣੀ ਪ੍ਰਤੀ ਏਕੜ ਵਰਤੋ।", gu: "150-200 લિટર પાણી વાપરો.", mr: "एकरी 150-200 लिटर पाणी वापरा." },
+                p4: { hi: "150-200 लीटर पानी प्रति एकड़ में एकसमान छिड़काव करें।", en: "Use 150-200 L water/acre.", pa: "150-200 ਲੀਟਰ ਪਾਣੀ ਪ੍ਰਤੀ ਏਕੜ ਵਰਤੋ।", gu: "150-200 ਲિટર પાણી વાપરો.", mr: "एकरी 150-200 लिटर पाणी वापरा." },
                 p5: { hi: "बीज बनने से पहले खरपतवार नष्ट करें।", en: "Prevent seed set and disperse.", pa: "ਬੀਜ ਪੱਕਣ ਤੋਂ ਪਹਿਲਾਂ ਨਸ਼ਟ ਕਰੋ।", gu: "બીજ બને તે પહેલાં નાશ કરો.", mr: "बियाणे तयार होण्यापूर्वी नष्ट करा." }
             }
         };
@@ -1889,7 +1975,7 @@ ${result.message || "कृपया केवल खेत की हरी प
         });
     }
 
-    // 8. THEME TOGGLER
+    // 9. THEME TOGGLER
     function toggleTheme() {
         const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
         const newTheme = currentTheme === "dark" ? "light" : "dark";
@@ -1921,7 +2007,7 @@ ${result.message || "कृपया केवल खेत की हरी प
         }
     }
 
-    // 9. TECHNICAL EXPERT CONSOLE CONTROLLER
+    // 10. TECHNICAL EXPERT CONSOLE CONTROLLER
     const sidebar = document.getElementById("sidebar");
     const openSidebarBtn = document.getElementById("open-sidebar-btn");
     const closeSidebarBtn = document.getElementById("close-sidebar-btn");
@@ -2165,7 +2251,9 @@ ${result.message || "कृपया केवल खेत की हरी प
 
     async function openExpertCamera() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("Camera not supported or requires HTTPS. Opening file selector.");
+            const lang = currentLanguage;
+            const camErr = I18N_TEXTS.camera_error_msg && I18N_TEXTS.camera_error_msg[lang] ? I18N_TEXTS.camera_error_msg[lang] : "Could not open camera.";
+            showWarningModal("Camera Access", camErr, "Please select an image file instead.");
             fileInput.click();
             return;
         }
@@ -2417,6 +2505,5 @@ ${result.message || "कृपया केवल खेत की हरी प
         });
     }
 
-    // Initial Models Load
     fetchModelsFromBackend();
 });
