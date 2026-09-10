@@ -674,10 +674,6 @@ def classify_specimen_heuristics(image, crop="Cotton"):
         return probabilities
 
 # ============================================================
-# TRIPLE-SHIELD SPECIMEN VERIFICATION GATE
-# ============================================================
-
-# ============================================================
 # TRIPLE-SHIELD SPECIMEN VERIFICATION GATE (EXPANDED DOMAIN)
 # ============================================================
 
@@ -701,13 +697,13 @@ FOOD_AND_CULINARY_OBJECTS = [
 ]
 
 # 3. Animals & Wildlife
-# 3. Animals & Wildlife (Excludes snakes/reptiles/insects to prevent false positives from grassy weed blades in field dirt)
 ANIMAL_OBJECTS = [
     "dog", "cat", "bird", "horse", "cow", "sheep", "goat", "pig", "elephant", "bear",
     "lion", "tiger", "leopard", "cheetah", "wolf", "fox", "deer", "rabbit", "hare",
     "monkey", "ape", "chimpanzee", "gorilla", "fish", "shark", "whale", "dolphin",
     "duck", "goose", "swan", "chicken", "rooster", "hen", "turkey", "penguin", "ostrich",
-    "golden_retriever", "labrador_retriever", "pug", "chihuahua", "persian_cat", "siamese_cat"
+    "golden_retriever", "labrador_retriever", "pug", "chihuahua", "persian_cat", "siamese_cat",
+    "snake", "nematode"
 ]
 
 # 4. Flower Blossoms (When flower head dominates without weed leaf structure)
@@ -716,15 +712,17 @@ FLOWER_DOMINANT_OBJECTS = [
     "dahlia", "carnation", "poppy", "vase", "bouquet"
 ]
 
-# 5. Humans & Synthetic Objects
+# 5. Humans, Apparel, Electronics & Non-Agricultural Objects
 HUMAN_AND_SYNTHETIC_OBJECTS = [
     "person", "man", "woman", "boy", "girl", "child", "baby", "face", "skin",
-    "suit", "bulletproof_vest", "vest", "sunglass", "sunglasses",
+    "suit", "bulletproof_vest", "vest", "sunglass", "sunglasses", "ladle", "brassiere",
     "coat", "shirt", "jersey", "jean", "dress", "t-shirt", "tie", "apparel", "uniform",
     "shoe", "boot", "sneaker", "sock", "glove", "hat", "cap", "helmet",
     "car", "truck", "automobile", "motorcycle", "bicycle", "bus", "cab", "trailer",
     "vehicle", "train", "airplane", "boat", "ship",
-    "laptop", "screen", "monitor", "keyboard", "mouse", "cellular_telephone", "phone", "computer", "hand-held_computer", "hand_held_computer", "lab_coat",
+    "laptop", "screen", "monitor", "keyboard", "mouse", "cellular_telephone", "phone",
+    "computer", "hand-held_computer", "hand_held_computer", "lab_coat", "web_site", "website",
+    "radio", "tape_player", "cassette_player", "cash_machine", "analog_clock", "digital_clock",
     "desk", "chair", "sofa", "couch", "bed", "table", "lamp", "clock", "television",
     "book", "binder", "envelope", "paper", "pen", "pencil", "wallet", "bag", "backpack"
 ]
@@ -742,10 +740,10 @@ def get_imagenet_validator():
 
 def is_valid_leaf_specimen(image):
     """
-    Multi-Tier Agronomic Specimen Verification Gate:
-    1. Texture & Photographic Reality Filter (Rejects wallpapers, synthetic graphics, vector drawings)
+    Multi-Tier Botanical Specimen Verification Gate:
+    1. Texture & Photographic Reality Filter (Rejects wallpapers, synthetic graphics, vector drawings, UI screenshots)
     2. Dominant Fruit / Non-Foliage Color Detector (Instantly catches red/orange apples, tomatoes, citrus)
-    3. Chlorophyll Foliage Coverage Filter (Ensures genuine living crop/weed leaf presence)
+    3. Living Botanical Foliage & Chlorophyll Reflectance Filter (Rejects humans, faces, indoor rooms, clothes)
     4. Deep Learning ImageNet Object Verification (MobileNetV2 ImageNet backbone):
        - Rejects Fruits & Produce (Apples, Pears, Citrus, Bananas, Harvested Corn Cobs)
        - Rejects Food & Culinary Items
@@ -759,14 +757,14 @@ def is_valid_leaf_specimen(image):
         r, g, b = arr[:,:,0], arr[:,:,1], arr[:,:,2]
         gray = 0.299 * r + 0.587 * g + 0.114 * b
         
-        # 1. TEXTURE & PHOTOGRAPHIC REALITY FILTER
+        # 1. TEXTURE & PHOTOGRAPHIC REALITY FILTER (Rejects flat digital graphics, wallpapers, UI screenshots)
         gx = np.abs(gray[:, 1:] - gray[:, :-1])
         gy = np.abs(gray[1:, :] - gray[:-1, :])
         grad = (gx[:-1, :] + gy[:, :-1]) / 2.0
         flat_ratio = float(np.sum(grad < 1.0)) / float(grad.size)
         grad_mean = float(np.mean(grad))
         
-        if (grad_mean < 0.4 and flat_ratio > 0.90) or grad_mean < 0.2:
+        if grad_mean < 2.5 or flat_ratio > 0.45:
             return False, "Digital graphic, wallpaper, or non-photographic surface detected. Please upload an authentic photograph of a plant or crop leaf."
 
         # 2. DOMINANT FRUIT / NON-FOLIAGE COLOR PROFILE FILTER
@@ -778,26 +776,51 @@ def is_valid_leaf_specimen(image):
         r_128, g_128, b_128 = arr_128[:,:,0], arr_128[:,:,1], arr_128[:,:,2]
 
         # Vivid Red/Crimson fruit mask (Apples, Strawberries, Tomatoes, Pomegranates)
-        # Note: True red fruit exhibits saturated red hue (Hue <= 12 or >= 245), S >= 80, V >= 65, R > 1.30 * G
-        # Agricultural soil has hue 25-45 and low saturation (< 50), avoiding false triggers completely.
-        fruit_red_mask = ((h_arr <= 12) | (h_arr >= 245)) & (s_arr >= 80) & (v_arr >= 65) & (r_128 > g_128 * 1.30) & (r_128 > b_128 * 1.20)
+        fruit_red_mask = ((h_arr <= 12) | (h_arr >= 245)) & (s_arr >= 70) & (v_arr >= 60) & (r_128 > g_128 * 1.25) & (r_128 > b_128 * 1.15)
         fruit_red_ratio = float(np.sum(fruit_red_mask)) / float(fruit_red_mask.size)
 
         # Vivid Orange/Yellow citrus & mango fruit mask (High saturation orange/yellow produce)
-        fruit_orange_mask = (h_arr >= 12) & (h_arr <= 32) & (s_arr >= 165) & (v_arr >= 160) & (r_128 > g_128 * 1.15) & (r_128 > b_128 * 1.70)
+        fruit_orange_mask = (h_arr >= 12) & (h_arr <= 32) & (s_arr >= 150) & (v_arr >= 140) & (r_128 > g_128 * 1.12) & (r_128 > b_128 * 1.60)
         fruit_orange_ratio = float(np.sum(fruit_orange_mask)) / float(fruit_orange_mask.size)
 
         if fruit_red_ratio > 0.08 or fruit_orange_ratio > 0.12:
             detected_fruit_type = "Red Fruit / Apple / Tomato" if fruit_red_ratio > 0.08 else "Citrus / Yellow Fruit"
             return False, f"Fruit or horticultural produce detected ({detected_fruit_type}). AgriShield is trained exclusively on crop leaf foliage and weeds, not fruits."
 
-        # 3. LIVING BOTANICAL FOLIAGE PRESENCE
-        # Genuine crop and weed foliage exhibits chlorophyll green saturation
-        green_mask = (h_arr >= 24) & (h_arr <= 105) & (s_arr >= 20) & (v_arr >= 22) & (g_128 >= r_128 * 0.90) & (g_128 >= b_128 * 0.85)
-        green_ratio = float(np.sum(green_mask)) / float(green_mask.size)
-        
-        if green_ratio < 0.08:
+        # 3. LIVING BOTANICAL FOLIAGE & CHLOROPHYLL REFLECTANCE (Rejects non-plant scenes, indoor rooms, humans)
+        exg = 2.0 * g_128 - r_128 - b_128
+        ngrdi = (g_128 - r_128) / (g_128 + r_128 + 1e-5)
+        living_chlorophyll = (
+            (h_arr >= 24) & (h_arr <= 112) &
+            (s_arr >= 18) & (v_arr >= 20) &
+            (g_128 > r_128 * 1.01) & (g_128 > b_128 * 0.90) &
+            (exg > 1.5) & (ngrdi > 0.005)
+        )
+        plant_pixel_count = np.sum(living_chlorophyll)
+        plant_ratio = float(plant_pixel_count) / float(living_chlorophyll.size)
+
+        if plant_ratio < 0.06:
+            # Check if human subject / skin is present without leaf foliage
+            skin_mask = (r_128 > 95) & (g_128 > 40) & (b_128 > 20) & ((r_128 - b_128) > 15) & ((r_128 - g_128) > 12) & (r_128 > g_128) & (r_128 > b_128)
+            skin_ratio = float(np.sum(skin_mask)) / float(skin_mask.size)
+            if skin_ratio > 0.08:
+                return False, "Human portrait or subject detected. AgriShield exclusively analyzes botanical crop and weed leaf specimens."
             return False, "No crop leaf or weed foliage detected. Please upload an authentic photograph of a crop leaf or field weed specimen."
+
+        # Spatial clustering & organic texture
+        if plant_pixel_count > 40:
+            plant_float = living_chlorophyll.astype(np.float32)
+            pad = np.pad(plant_float, 1, mode="constant")
+            neighbors = (
+                pad[:-2, :-2] + pad[:-2, 1:-1] + pad[:-2, 2:] +
+                pad[1:-1, :-2] + pad[1:-1, 1:-1] + pad[1:-1, 2:] +
+                pad[2:, :-2] + pad[2:, 1:-1] + pad[2:, 2:]
+            )
+            core_leaf_pixels = np.sum((living_chlorophyll) & (neighbors >= 4.0))
+            cluster_ratio = float(core_leaf_pixels) / float(living_chlorophyll.size)
+            green_std = float(np.std(g_128[living_chlorophyll]))
+            if cluster_ratio < 0.03 or green_std < 3.5:
+                return False, "Synthetic or artificial color detected. Please upload an authentic photograph of a plant or weed leaf."
 
         # 4. DEEP LEARNING IMAGENET OBJECT VERIFICATION
         validator = get_imagenet_validator()
@@ -821,7 +844,7 @@ def is_valid_leaf_specimen(image):
                                 top_fruit_label = label
                             break
 
-                if fruit_prob_sum > 0.10 or (top_fruit_label and decoded[0][1] == top_fruit_label):
+                if fruit_prob_sum > 0.08 or (top_fruit_label and decoded[0][1] == top_fruit_label):
                     nice_name = (top_fruit_label or decoded[0][1]).replace("_", " ").title()
                     if nice_name.lower() == "hip":
                         nice_name = "Apple / Rose Hip Fruit"
@@ -832,34 +855,31 @@ def is_valid_leaf_specimen(image):
                 # Check other categories in decoded predictions
                 for _, label, prob in decoded:
                     lbl = label.lower().replace("_", " ")
+                    clean_lbl = label.replace("_", " ").title()
 
                     # Check Animals
                     for kw in ANIMAL_OBJECTS:
                         clean_kw = kw.replace("_", " ")
                         if re.search(r"\b" + re.escape(clean_kw) + r"\b", lbl) and prob > 0.08:
-                            nice_name = label.replace("_", " ").title()
-                            return False, f"Animal or wildlife detected ({nice_name}). AgriShield exclusively analyzes crop and weed leaves."
+                            return False, f"Animal or wildlife detected ({clean_lbl}). AgriShield exclusively analyzes crop and weed leaves."
 
                     # Check Prepared Food & Dishes
                     for kw in FOOD_AND_CULINARY_OBJECTS:
                         clean_kw = kw.replace("_", " ")
                         if re.search(r"\b" + re.escape(clean_kw) + r"\b", lbl) and prob > 0.08:
-                            nice_name = label.replace("_", " ").title()
-                            return False, f"Culinary / food item detected ({nice_name}). AgriShield only analyzes agricultural crop leaves and weeds."
+                            return False, f"Culinary / food item detected ({clean_lbl}). AgriShield only analyzes agricultural crop leaves and weeds."
 
                     # Check Flower Blossoms
                     for kw in FLOWER_DOMINANT_OBJECTS:
                         clean_kw = kw.replace("_", " ")
                         if re.search(r"\b" + re.escape(clean_kw) + r"\b", lbl) and prob > 0.14:
-                            nice_name = label.replace("_", " ").title()
-                            return False, f"Ornamental flower blossom detected ({nice_name}). Please upload crop or weed foliage leaves."
+                            return False, f"Ornamental flower blossom detected ({clean_lbl}). Please upload crop or weed foliage leaves."
 
                     # Check Humans & Synthetic Objects
                     for kw in HUMAN_AND_SYNTHETIC_OBJECTS:
                         clean_kw = kw.replace("_", " ")
-                        if re.search(r"\b" + re.escape(clean_kw) + r"\b", lbl) and prob > 0.10:
-                            nice_name = label.replace("_", " ").title()
-                            return False, f"Non-agricultural object detected ({nice_name}). AgriShield exclusively scans crop leaves and weed specimens."
+                        if re.search(r"\b" + re.escape(clean_kw) + r"\b", lbl) and prob > 0.08:
+                            return False, f"Non-agricultural object detected ({clean_lbl}). AgriShield exclusively scans crop leaves and weed specimens."
 
             except Exception as e:
                 print(f"Warning in ImageNet validator: {e}")

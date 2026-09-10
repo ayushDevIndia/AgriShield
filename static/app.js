@@ -1904,9 +1904,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 const lang = currentLanguage;
                 const title = I18N_TEXTS.warning_title[lang] || "⚠️ पत्ती की पहचान नहीं हुई";
                 let desc = I18N_TEXTS.warning_fruit_msg[lang] || "यह पौधे की पत्ती नहीं है। कृपया केवल फसल या खरपतवार की हरी पत्ती की साफ फोटो दें।";
+                const msgLower = (result.message || "").toLowerCase();
 
-                if (result.message && (result.message.toLowerCase().includes("fruit") || result.message.toLowerCase().includes("apple") || result.message.toLowerCase().includes("tomato"))) {
-                    desc = lang === "en" ? "Fruit detected. Please take a photo of plant leaves, not fruits." : (lang === "pa" ? "ਫ਼ਲ ਦੀ ਪਛਾਣ ਹੋਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪੱਤੇ ਦੀ ਫੋਟੋ ਲਓ।" : (lang === "gu" ? "ફળ જણાયું છે. કૃપા કરીને પાંદડાની ફોટો લો." : (lang === "mr" ? "फळ आढळले आहे. कृपया पानाचा फोटो घ्या." : "फल या सब्जी की जगह पौधे की हरी पत्ती की फोटो लें।")));
+                if (msgLower.includes("human") || msgLower.includes("portrait") || msgLower.includes("person") || msgLower.includes("face")) {
+                    desc = lang === "en" ? "Person or face detected. Please photograph only a green crop or weed leaf." 
+                         : (lang === "pa" ? "ਇਨਸਾਨ ਜਾਂ ਚਿਹਰੇ ਦੀ ਬਜਾਏ ਕੇਵਲ ਫ਼ਸਲ ਜਾਂ ਨਦੀਨ ਦੇ ਪੱਤੇ ਦੀ ਫੋਟੋ ਲਓ।" 
+                         : (lang === "gu" ? "માણસ કે ચહેરાની જગ્યાએ ફક્ત પાક અથવા નીંદણના પાનની ફોટો લો." 
+                         : (lang === "mr" ? "व्यक्ती किंवा चेहऱ्याऐवजी फक्त पीक किंवा तणाच्या पानाचा फोटो घ्या." 
+                         : "इंसान या चेहरे की जगह केवल पौधे या खरपतवार की हरी पत्ती की फोटो लें।")));
+                } else if (msgLower.includes("fruit") || msgLower.includes("apple") || msgLower.includes("tomato") || msgLower.includes("produce") || msgLower.includes("citrus")) {
+                    desc = lang === "en" ? "Fruit detected. Please photograph plant leaves, not fruits." 
+                         : (lang === "pa" ? "ਫ਼ਲ ਦੀ ਪਛਾਣ ਹੋਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪੌਦੇ ਦੇ ਹਰੇ ਪੱਤੇ ਦੀ ਫੋਟੋ ਲਓ।" 
+                         : (lang === "gu" ? "ફળ જણાયું છે. કૃપા કરીને છોડના લીલા પાંદડાની ફોટો લો." 
+                         : (lang === "mr" ? "फळ आढळले आहे. कृपया फळाऐवजी झाडाच्या पानाचा फोटो घ्या." 
+                         : "फल या सब्जी की जगह केवल पौधे की हरी पत्ती की फोटो लें।")));
+                } else if (msgLower.includes("graphic") || msgLower.includes("wallpaper") || msgLower.includes("surface") || msgLower.includes("screenshot")) {
+                    desc = lang === "en" ? "Digital image or non-plant screen detected. Please photograph a real living leaf in field." 
+                         : (lang === "pa" ? "ਕੰਪਿਊਟਰ ਜਾਂ ਸਕ੍ਰੀਨ ਫੋਟੋ ਰੱਦ ਕੀਤੀ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਖੇਤ ਵਿੱਚ ਅਸਲੀ ਪੱਤੇ ਦੀ ਫੋਟੋ ਲਓ।" 
+                         : (lang === "gu" ? "ડિજિટલ સ્ક્રીન કે વોલપેપર છે. કૃપા કરીને ખેતરમાં અસલી પાંદડાની ફોટો લો." 
+                         : (lang === "mr" ? "डिजिटल स्क्रीन किंवा वॉलपेपर आहे. कृपया शेतातील अस्सल पानाचा फोटो घ्या." 
+                         : "स्क्रीन या वॉलपेपर की जगह खेत में जाकर पौधे की हरी पत्ती की फोटो लें।")));
+                } else if (msgLower.includes("animal") || msgLower.includes("wildlife")) {
+                    desc = lang === "en" ? "Animal detected. Please photograph only crop or weed leaves." 
+                         : (lang === "pa" ? "ਜਾਨਵਰ ਦੀ ਪਛਾਣ ਹੋਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੇਵਲ ਪੱਤੇ ਦੀ ਫੋਟੋ ਲਓ।" 
+                         : (lang === "gu" ? "પ્રાણી જણાયું છે. કૃપા કરીને ફક્ત પાંદડાની ફોટો લો." 
+                         : (lang === "mr" ? "प्राणी आढळला आहे. कृपया फक्त पानाचा फोटो घ्या." 
+                         : "जानवर की जगह केवल पौधे या खरपतवार की हरी पत्ती की फोटो लें।")));
                 }
 
                 const hint = I18N_TEXTS.warning_action_hint[lang] || "सुझाव: कैमरे को पत्ती के पास रखकर अच्छी रोशनी में फोटो लें।";
