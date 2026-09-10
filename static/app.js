@@ -433,32 +433,32 @@ document.addEventListener("DOMContentLoaded", () => {
     "mr": "नैसर्गिक सूर्यप्रकाशात पानाचा स्पष्ट आणि जवळून फोटो घ्या. माती, दगड किंवा फळांचे फोटो टाळा जेणेकरून अचूक निदान मिळेल."
   },
   "warning_title": {
-    "hi": "⚠️ गैर-पादप फोटो अस्वीकृत (Non-Leaf Detected)",
-    "en": "⚠️ Botanical Specimen Rejected (Non-Leaf Detected)",
-    "pa": "⚠️ ਗੈਰ-ਪੌਦਾ ਫੋਟੋ ਅਸਵੀਕਾਰ (ਪੱਤਾ ਨਹੀਂ ਹੈ)",
-    "gu": "⚠️ બિન-વનસ્પતિ ફોટો અસ્વીકાર (પાંદડું નથી)",
-    "mr": "⚠️ गैर-वनस्पती फोटो नाकारला (पानाचा फोटो नाही)"
+    "hi": "⚠️ पत्ती की पहचान नहीं हुई",
+    "en": "⚠️ Leaf Not Detected",
+    "pa": "⚠️ ਪੱਤੇ ਦੀ ਪਛਾਣ ਨਹੀਂ ਹੋਈ",
+    "gu": "⚠️ પાંદડું મળ્યું નથી",
+    "mr": "⚠️ पान ओळखता आले नाही"
   },
   "warning_fruit_msg": {
-    "hi": "आपने फल/सब्जी अथवा गैर-पादप वस्तु की फोटो दी है। AgroweedNet केवल कपास व मक्का के पौधों और खरपतवारों की हरी पत्तियों की पहचान करता है, फलों की नहीं।",
-    "en": "Fruit, produce, or non-leaf object detected. AgroweedNet is an agronomic AI trained exclusively on vegetative crop leaves and field weeds, strictly rejecting non-plants to prevent misdiagnosis.",
-    "pa": "ਤੁਸੀਂ ਫ਼ਲ/ਸਬਜ਼ੀ ਜਾਂ ਹੋਰ ਵਸਤੂ ਦੀ ਫੋਟੋ ਦਿੱਤੀ ਹੈ। AgroweedNet ਕੇਵਲ ਕਪਾਹ ਅਤੇ ਮੱਕੀ ਦੇ ਪੱਤਿਆਂ ਅਤੇ ਨਦੀਨਾਂ ਦੀ ਜਾਂਚ ਲਈ ਬਣਿਆ ਹੈ।",
-    "gu": "તમે ફળ/શાકભાજી અથવા અન્ય વસ્તુનો ફોટો આપ્યો છે. AgroweedNet માત્ર કપાસ અને મકાઈના પાંદડા તેમજ નીંદણની તપાસ માટે તાલીમબદ્ધ છે.",
-    "mr": "तुम्ही फळ/भाजी किंवा इतर वस्तूचा फोटो दिला आहे. AgroweedNet केवळ कापूस, मका आणि तणांच्या पानांची तपासणी करण्यासाठी तयार केले आहे."
+    "hi": "यह पौधे की पत्ती नहीं है। कृपया केवल फसल या खरपतवार की हरी पत्ती की साफ फोटो दें।",
+    "en": "This is not a plant leaf. Please upload a clear photo of a crop or weed leaf.",
+    "pa": "ਇਹ ਪੌਦੇ ਦਾ ਪੱਤਾ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਫ਼ਸਲ ਜਾਂ ਨਦੀਨ ਦੇ ਹਰੇ ਪੱਤੇ ਦੀ ਸਾਫ਼ ਫੋਟੋ ਲਓ।",
+    "gu": "આ છોડનું પાન નથી. કૃપા કરીને પાક અથવા નીંદણના લીલા પાનની સ્પષ્ટ ફોટો આપો.",
+    "mr": "हे वनस्पतीचे पान नाही. कृपया पीक किंवा तणाच्या हिरव्या पानाचा स्पष्ट फोटो द्या."
   },
   "warning_action_hint": {
-    "hi": "सलाह: कृपया खेत में पौधे अथवा खरपतवार की हरी पत्ती की नजदीक से साफ फोटो लें।",
-    "en": "Advice: Please capture a clean, close-up photograph of an authentic green crop leaf or field weed.",
-    "pa": "ਸਲਾਹ: ਕਿਰਪਾ ਕਰਕੇ ਖੇਤ ਵਿੱਚੋਂ ਪੌਦੇ ਜਾਂ ਨਦੀਨ ਦੇ ਹਰੇ ਪੱਤੇ ਦੀ ਸਾਫ਼ ਫੋਟੋ ਲਓ।",
-    "gu": "સલાહ: કૃપા કરીને ખેતરમાંથી પાક અથવા નીંદણના લીલા પાંદડાનો સ્પષ્ટ ફોટો લો.",
-    "mr": "सल्ला: कृपया शेतातून वनस्पती किंवा तणाच्या हिरव्या पानाचा स्पष्ट फोटो घ्या."
+    "hi": "सुझाव: कैमरे को पत्ती के पास रखकर अच्छी रोशनी में फोटो लें।",
+    "en": "Tip: Hold camera close to the leaf in good natural light.",
+    "pa": "ਸੁਝਾਅ: ਕੈਮਰਾ ਪੱਤੇ ਦੇ ਨੇੜੇ ਰੱਖ ਕੇ ਚੰਗੀ ਰੋਸ਼ਨੀ ਵਿੱਚ ਫੋਟੋ ਲਓ।",
+    "gu": "સૂચન: કેમેરો પાંદડાની નજીક રાખીને સારા પ્રકાશમાં ફોટો લો.",
+    "mr": "टीप: कॅमेरा पानाच्या जवळ धरून चांगल्या प्रकाशात फोटो घ्या."
   },
   "warning_btn_ok": {
-    "hi": "समझ गया / दोबारा फोटो लें",
-    "en": "Understood / Retake Photo",
-    "pa": "ਸਮਝ ਗਿਆ / ਦੁਬਾਰਾ ਫੋਟੋ ਲਓ",
-    "gu": "સમજાયું / ફરીથી ફોટો લો",
-    "mr": "समजले / पुन्हा फोटो घ्या"
+    "hi": "दोबारा फोटो लें (Try Again)",
+    "en": "Try Again",
+    "pa": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ (Try Again)",
+    "gu": "ફરી પ્રયાસ કરો (Try Again)",
+    "mr": "पुन्हा प्रयत्न करा (Try Again)"
   },
   "camera_error_msg": {
     "hi": "कैमरा चालू नहीं हो सका। कृपया अपनी गैलरी से फोटो चुनें या कैमरा अनुमति जांचें।",
@@ -1902,9 +1902,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderFarmerDiagnosisResult(result, championModel, file);
             } else if (result.is_leaf === false) {
                 const lang = currentLanguage;
-                const title = I18N_TEXTS.warning_title && I18N_TEXTS.warning_title[lang] ? I18N_TEXTS.warning_title[lang] : "⚠️ गैर-पादप फोटो अस्वीकृत";
-                const desc = result.message || (I18N_TEXTS.warning_fruit_msg && I18N_TEXTS.warning_fruit_msg[lang] ? I18N_TEXTS.warning_fruit_msg[lang] : "कृपया केवल खेत की पत्ती की फोटो दें।");
-                const hint = result.suggestion || (I18N_TEXTS.warning_action_hint && I18N_TEXTS.warning_action_hint[lang] ? I18N_TEXTS.warning_action_hint[lang] : "सलाह: पौधे अथवा खरपतवार की हरी पत्ती की साफ फोटो लें।");
+                const title = I18N_TEXTS.warning_title[lang] || "⚠️ पत्ती की पहचान नहीं हुई";
+                let desc = I18N_TEXTS.warning_fruit_msg[lang] || "यह पौधे की पत्ती नहीं है। कृपया केवल फसल या खरपतवार की हरी पत्ती की साफ फोटो दें।";
+
+                if (result.message && (result.message.toLowerCase().includes("fruit") || result.message.toLowerCase().includes("apple") || result.message.toLowerCase().includes("tomato"))) {
+                    desc = lang === "en" ? "Fruit detected. Please take a photo of plant leaves, not fruits." : (lang === "pa" ? "ਫ਼ਲ ਦੀ ਪਛਾਣ ਹੋਈ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਪੱਤੇ ਦੀ ਫੋਟੋ ਲਓ।" : (lang === "gu" ? "ફળ જણાયું છે. કૃપા કરીને પાંદડાની ફોટો લો." : (lang === "mr" ? "फळ आढळले आहे. कृपया पानाचा फोटो घ्या." : "फल या सब्जी की जगह पौधे की हरी पत्ती की फोटो लें।")));
+                }
+
+                const hint = I18N_TEXTS.warning_action_hint[lang] || "सुझाव: कैमरे को पत्ती के पास रखकर अच्छी रोशनी में फोटो लें।";
                 showWarningModal(title, desc, hint);
             } else {
                 showWarningModal("Diagnosis Error", result.error || "Model could not generate prediction.", "Please check leaf image quality.");
