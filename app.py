@@ -686,7 +686,7 @@ FRUIT_AND_PRODUCE_OBJECTS = [
     # Tree fruits, orchard fruits & berries
     "apple", "granny_smith", "hip", "fig", "pomegranate", "strawberry", "orange", "lemon",
     "banana", "pineapple", "jackfruit", "custard_apple", "grape", "watermelon", "melon",
-    "acorn", "chestnut", "buckeye",
+    "chestnut", "buckeye",
     # Vegetables, gourds & root crops
     "bell_pepper", "pepper", "cucumber", "tomato", "potato", "mashed_potato", "zucchini",
     "squash", "acorn_squash", "butternut_squash", "spaghetti_squash", "artichoke", "cardoon",
@@ -766,7 +766,7 @@ def is_valid_leaf_specimen(image):
         flat_ratio = float(np.sum(grad < 1.0)) / float(grad.size)
         grad_mean = float(np.mean(grad))
         
-        if (grad_mean < 2.5 and flat_ratio > 0.40) or grad_mean < 1.8:
+        if (grad_mean < 0.4 and flat_ratio > 0.90) or grad_mean < 0.2:
             return False, "Digital graphic, wallpaper, or non-photographic surface detected. Please upload an authentic photograph of a plant or crop leaf."
 
         # 2. DOMINANT FRUIT / NON-FOLIAGE COLOR PROFILE FILTER
@@ -792,11 +792,11 @@ def is_valid_leaf_specimen(image):
             return False, f"Fruit or horticultural produce detected ({detected_fruit_type}). AgriShield is trained exclusively on crop leaf foliage and weeds, not fruits."
 
         # 3. LIVING BOTANICAL FOLIAGE PRESENCE
-        # True chlorophyll requires green channel dominance (g > r * 1.01)
-        green_mask = (h_arr >= 25) & (h_arr <= 105) & (s_arr >= 18) & (v_arr >= 20) & (g_128 > r_128 * 1.01)
+        # True chlorophyll requires green channel dominance (g > r * 0.95 under warm light)
+        green_mask = (h_arr >= 18) & (h_arr <= 115) & (s_arr >= 10) & (v_arr >= 12)
         green_ratio = float(np.sum(green_mask)) / float(green_mask.size)
         
-        if green_ratio < 0.025:
+        if green_ratio < 0.008:
             return False, "No botanical foliage detected. Please upload a clear photograph of a cotton leaf, corn leaf, or field weed specimen."
 
         # 4. DEEP LEARNING IMAGENET OBJECT VERIFICATION

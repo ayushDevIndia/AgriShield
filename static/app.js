@@ -1717,6 +1717,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (farmerCardCotton) farmerCardCotton.addEventListener("click", () => openFarmerCropModal("Cotton"));
     if (farmerCardCorn) farmerCardCorn.addEventListener("click", () => openFarmerCropModal("Corn"));
+    document.querySelectorAll(".farmer-card-cta-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const crop = btn.getAttribute("data-crop") || "Cotton";
+            openFarmerCropModal(crop);
+        });
+    });
 
     if (closeFarmerUploadBtn) {
         closeFarmerUploadBtn.addEventListener("click", () => {
@@ -1751,11 +1758,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
             try {
                 farmerCameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: "environment", width: 800, height: 600 },
+                    video: { facingMode: { ideal: "environment" } },
                     audio: false
                 });
                 farmerCameraVideo.srcObject = farmerCameraStream;
+                try {
+                    await farmerCameraVideo.play();
+                } catch(pe) {
+                    console.log("Video auto-play:", pe);
+                }
                 farmerUploadButtonsView.style.display = "none";
+                farmerModalDropzone.style.display = "none";
                 farmerCameraContainer.style.display = "flex";
             } catch (err) {
                 console.error("Camera access failed:", err);
@@ -1772,18 +1785,25 @@ document.addEventListener("DOMContentLoaded", () => {
             stopFarmerCamera();
             farmerCameraContainer.style.display = "none";
             farmerUploadButtonsView.style.display = "grid";
+            farmerModalDropzone.style.display = "block";
         });
     }
 
     if (farmerCameraSnapBtn) {
         farmerCameraSnapBtn.addEventListener("click", () => {
             if (!farmerCameraStream) return;
-            farmerCameraCanvas.width = farmerCameraVideo.videoWidth;
-            farmerCameraCanvas.height = farmerCameraVideo.videoHeight;
+            const w = farmerCameraVideo.videoWidth || 640;
+            const h = farmerCameraVideo.videoHeight || 480;
+            farmerCameraCanvas.width = w;
+            farmerCameraCanvas.height = h;
             const ctx = farmerCameraCanvas.getContext("2d");
-            ctx.drawImage(farmerCameraVideo, 0, 0, farmerCameraCanvas.width, farmerCameraCanvas.height);
+            ctx.drawImage(farmerCameraVideo, 0, 0, w, h);
             
             farmerCameraCanvas.toBlob(blob => {
+                if (!blob || blob.size === 0) {
+                    console.error("Empty snapshot blob");
+                    return;
+                }
                 const capturedFile = new File([blob], "farmer_snap.jpg", { type: "image/jpeg" });
                 stopFarmerCamera();
                 farmerCameraContainer.style.display = "none";
@@ -1883,8 +1903,8 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (result.is_leaf === false) {
                 const lang = currentLanguage;
                 const title = I18N_TEXTS.warning_title && I18N_TEXTS.warning_title[lang] ? I18N_TEXTS.warning_title[lang] : "⚠️ गैर-पादप फोटो अस्वीकृत";
-                const desc = I18N_TEXTS.warning_fruit_msg && I18N_TEXTS.warning_fruit_msg[lang] ? I18N_TEXTS.warning_fruit_msg[lang] : result.message;
-                const hint = I18N_TEXTS.warning_action_hint && I18N_TEXTS.warning_action_hint[lang] ? I18N_TEXTS.warning_action_hint[lang] : result.suggestion;
+                const desc = result.message || (I18N_TEXTS.warning_fruit_msg && I18N_TEXTS.warning_fruit_msg[lang] ? I18N_TEXTS.warning_fruit_msg[lang] : "कृपया केवल खेत की पत्ती की फोटो दें।");
+                const hint = result.suggestion || (I18N_TEXTS.warning_action_hint && I18N_TEXTS.warning_action_hint[lang] ? I18N_TEXTS.warning_action_hint[lang] : "सलाह: पौधे अथवा खरपतवार की हरी पत्ती की साफ फोटो लें।");
                 showWarningModal(title, desc, hint);
             } else {
                 showWarningModal("Diagnosis Error", result.error || "Model could not generate prediction.", "Please check leaf image quality.");
