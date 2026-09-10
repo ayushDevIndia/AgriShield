@@ -3114,24 +3114,25 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .farmer-crop-details {
-    padding: 24px;
+    padding: 22px 20px;
     display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
-.farmer-crop-name-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--bg-card);
 }
 
 .crop-h3-name {
     font-family: 'Outfit', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 26px;
+    font-weight: 800;
     color: var(--text-primary);
+    letter-spacing: -0.3px;
+    transition: color 0.25s ease;
+}
+
+.farmer-crop-card:hover .crop-h3-name {
+    color: #10b981;
 }
 
 .crop-sci-name {
