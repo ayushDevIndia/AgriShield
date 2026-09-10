@@ -1,368 +1,856 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="hi" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgriShield | ChatGPT-style Weed Diagnosis</title>
-    <!-- Google Fonts for Modern Typography -->
+    <title>AgroweedNet | AI Weed Diagnostic & Agronomic Management Platform</title>
+    <!-- Google Fonts for Modern Clean Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 for Professional Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Premium Stylesheet -->
+    <!-- Main Stylesheet -->
     <link rel="stylesheet" href="/style.css">
-    <!-- Frontend JS logic (DEFER tag added to resolve loading) -->
+    <!-- Frontend JS Controller -->
     <script src="/app.js" defer></script>
 </head>
 <body>
-    <div class="chat-app-container">
-        
-        <!-- SIDEBAR BACKDROP OVERLAY FOR MOBILE -->
-        <div class="sidebar-mobile-backdrop" id="sidebar-backdrop"></div>
-        
-        <!-- SIDEBAR (Collapsible, dark background like ChatGPT) -->
-        <aside class="chat-sidebar" id="sidebar">
-            <div class="sidebar-univ-brand">
-                <img src="/igu_seal.png?v=2" alt="IGU Emblem" class="sidebar-univ-seal">
-                <div class="sidebar-univ-info">
-                    <span class="sidebar-brand-title">AgriShield AI</span>
-                    <span class="sidebar-brand-sub">IGU Meerpur, Rewari</span>
+
+    <!-- ============================================================
+         1. GLOBAL UNIFIED APP NAVBAR
+         ============================================================ -->
+    <header class="agri-global-navbar" id="global-navbar">
+        <div class="nav-left">
+            <a href="javascript:void(0)" class="nav-brand-link" id="nav-home-logo-btn" title="Go to AgroweedNet Home">
+                <img src="/igu_seal.png?v=3" alt="IGU Emblem" class="nav-brand-seal">
+                <div class="nav-brand-meta">
+                    <span class="nav-brand-title">AgroweedNet</span>
+                    <span class="nav-brand-sub" data-i18n="univ_sub">इंदिरा गांधी विश्वविद्यालय, मीरपुर (रेवाड़ी)</span>
                 </div>
-            </div>
+            </a>
             
-            <div class="sidebar-header">
-                <button class="new-chat-btn" id="new-diagnosis-btn">
-                    <i class="fa-solid fa-plus"></i> New Diagnosis
-                </button>
-                <button class="sidebar-toggle-btn" id="close-sidebar-btn" title="Close Sidebar">
-                    <i class="fa-solid fa-angles-left"></i>
-                </button>
+            <!-- Dynamic Current Mode Indicator Badge -->
+            <div class="nav-mode-badge" id="nav-mode-badge" style="display: none;">
+                <span class="mode-dot"></span>
+                <span class="mode-label" id="nav-mode-label">किसान पोर्टल</span>
+            </div>
+        </div>
+
+        <div class="nav-right">
+            <!-- Back to Home Button (Visible when inside Farmer or Expert Portal) -->
+            <button class="nav-action-btn home-return-btn" id="global-return-home-btn" style="display: none;" title="Return to Role Selection Home">
+                <i class="fa-solid fa-house"></i>
+                <span data-i18n="nav_home_btn">मुख्य पृष्ठ</span>
+            </button>
+
+            <!-- Language Dropdown Switcher (Hindi, English, Punjabi, Gujarati, Marathi) -->
+            <div class="lang-selector-wrapper">
+                <i class="fa-solid fa-language lang-globe-icon"></i>
+                <select id="global-lang-select" class="lang-select-dropdown" title="Change Application Language / भाषा बदलें">
+                    <option value="hi" selected>🇮🇳 हिन्दी (Hindi)</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="pa">🇮🇳 ਪੰਜਾਬੀ (Punjabi)</option>
+                    <option value="gu">🇮🇳 ગુજરાતી (Gujarati)</option>
+                    <option value="mr">🇮🇳 मराठी (Marathi)</option>
+                </select>
             </div>
 
-            <!-- Sidebar Crop / Weed Suite Selector -->
-            <div class="sidebar-crop-section">
-                <span class="sidebar-crop-label"><i class="fa-solid fa-shield-virus"></i> Weed Target Crop</span>
-                <div class="sidebar-crop-pills">
-                    <button class="sidebar-crop-pill active" data-crop="Cotton" id="sidebar-crop-cotton">
-                        <i class="fa-solid fa-feather-pointed"></i> Cotton (13 Weeds)
-                    </button>
-                    <button class="sidebar-crop-pill" data-crop="Corn" id="sidebar-crop-corn">
-                        <i class="fa-solid fa-seedling"></i> Corn (5 Weeds)
-                    </button>
-                </div>
-            </div>
+            <!-- Theme Toggle (Dark / Light) -->
+            <button class="nav-action-btn theme-toggle-btn" id="global-theme-toggle" title="Toggle Dark/Light Mode">
+                <i class="fa-solid fa-sun" id="theme-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- ============================================================
+         2. VIEW 1: LANDING & ROLE SELECTION SCREEN
+         ============================================================ -->
+    <main class="portal-view active" id="view-landing">
+        <div class="landing-hero-container">
             
-            <!-- Chat History / Previous scans list -->
-            <div class="sidebar-history-container">
-                <span class="history-label">Recent Diagnosis Scans</span>
-                <div class="history-list" id="history-scans-list">
-                    <!-- Dynamic scan items loaded by JS -->
-                    <div class="history-item empty">
-                        <i class="fa-solid fa-message-medical"></i> No recent scans
-                    </div>
+            <!-- University Institutional Trust Pill -->
+            <div class="landing-univ-pill">
+                <img src="/igu_seal.png?v=3" alt="IGU Meerpur" class="hero-seal-img">
+                <span data-i18n="hero_pill_text">इंदिरा गांधी विश्वविद्यालय, मीरपुर • कंप्यूटर विज्ञान एवं कृषि विज्ञान विभाग</span>
+            </div>
+
+            <div class="hero-title-group">
+                <h1 class="hero-main-title">
+                    <span class="gradient-text">AgroweedNet</span>
+                </h1>
+                <p class="hero-subtitle" data-i18n="hero_subtitle">
+                    कृत्रिम बुद्धिमत्ता आधारित खरपतवार पहचान एवं 5-सूत्रीय त्वरित कृषि प्रबंधन प्रणाली
+                </p>
+                <div class="hero-role-prompt">
+                    <span class="prompt-badge" data-i18n="role_prompt_badge"><i class="fa-solid fa-user-check"></i> उपयोगकर्ता प्रकार चुनें</span>
+                    <h2 class="prompt-heading" data-i18n="role_prompt_heading">कृपया आगे बढ़ने के लिए अपना उपयोगकर्ता प्रकार चुनें:</h2>
                 </div>
             </div>
 
-            <!-- Sidebar Bottom Profile / Theme toggle -->
-            <div class="sidebar-footer">
-                <div class="user-profile">
-                    <div class="avatar-univ-wrap">
-                        <img src="/igu_seal.png?v=2" alt="IGU" class="avatar-univ-img">
-                    </div>
-                    <div class="user-info">
-                        <span class="username">Scholar AY</span>
-                        <span class="user-role">IGU Meerpur &bull; Research</span>
-                    </div>
-                </div>
-                <button class="footer-action-btn" id="theme-toggle" title="Toggle Dark/Light Mode">
-                    <i class="fa-solid fa-sun"></i>
-                </button>
-            </div>
-        </aside>
-
-        <!-- MAIN CHAT CONTAINER -->
-        <main class="chat-main-viewport" id="chat-viewport">
-            
-            <!-- Drag & Drop Floating Overlay -->
-            <div class="drag-drop-overlay" id="drag-drop-overlay" style="display: none;">
-                <div class="drag-drop-box">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <h3>Drop Leaf Specimen here to Scan</h3>
-                    <p>Supports PNG, JPG, or JPEG images</p>
-                </div>
-            </div>
-            
-            <!-- TOP CONTROLS ROW -->
-            <!-- TOP CONTROLS ROW (ChatGPT / Gemini Style) -->
-            <header class="chat-top-header">
-                <div class="header-left">
-                    <button class="sidebar-open-btn" id="open-sidebar-btn" title="Open Sidebar">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                    
-                    <!-- Header Weed Crop Selector -->
-                    <div class="header-crop-selector" id="header-crop-selector">
-                        <span class="crop-sel-label"><i class="fa-solid fa-leaf"></i> Crop:</span>
-                        <button class="crop-header-btn active" data-crop="Cotton" id="header-btn-cotton" title="Select Cotton Weed Suite (13 Classes)">
-                            <i class="fa-solid fa-feather-pointed"></i> Cotton (13)
-                        </button>
-                        <button class="crop-header-btn" data-crop="Corn" id="header-btn-corn" title="Select Corn Weed Suite (5 Classes)">
-                            <i class="fa-solid fa-seedling"></i> Corn (5)
-                        </button>
-                    </div>
-
-                    <!-- Model switcher dropdown -->
-                    <div class="model-dropdown-container">
-                        <button class="model-dropdown-trigger" id="model-dropdown-btn" title="Switch Deep Learning Model">
-                            <i class="fa-solid fa-wand-magic-sparkles model-trigger-sparkle"></i>
-                            <span class="model-trigger-name" id="active-model-name">InceptionV3 + Vision Mamba</span>
-                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
-                        </button>
-                        <div class="model-dropdown-menu" id="model-dropdown-menu">
-                            <!-- Dynamic Model options rendered by JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <div class="header-center">
-                    <div class="university-top-badge" id="open-univ-info" title="Indira Gandhi University, Meerpur (Rewari)">
-                        <img src="/igu_seal.png?v=2" alt="IGU Meerpur Seal" class="header-univ-seal">
-                        <span class="univ-name">IGU Meerpur, Rewari</span>
-                    </div>
-                </div>
-
-                <div class="header-right">
-                    <button class="header-action-btn" id="open-benchmarks-btn" title="View Model Benchmark Leaderboard">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Leaderboard</span>
-                    </button>
-                    <div class="system-status" id="system-status-indicator">
-                        <span class="status-dot pulsing"></span>
-                        <span class="status-text">Vision Core Online</span>
-                    </div>
-                </div>
-            </header>
-
-            <!-- CHAT CONVERSATION VIEWPORT -->
-            <div class="chat-feed-container" id="chat-feed">
+            <!-- DUAL ROLE SELECTION CARDS (FARMERS vs TECHNICAL EXPERT) -->
+            <div class="role-cards-grid">
                 
-                <!-- Center Welcome Screen (Weed Diagnostic & Crop Hub) -->
-                <div class="welcome-screen" id="welcome-screen">
-                    <div class="welcome-univ-pill">
-                        <img src="/igu_seal.png?v=2" alt="IGU Emblem" class="welcome-univ-seal">
-                        <span>Indira Gandhi University, Meerpur &bull; <strong>Department of Computer Science &amp; Agronomy</strong></span>
+                <!-- CARD 1: FARMERS (किसान) -->
+                <div class="role-selection-card role-farmer" id="select-role-farmer">
+                    <div class="role-card-glow"></div>
+                    <div class="role-card-badge">
+                        <i class="fa-solid fa-wheat-awn"></i>
+                        <span data-i18n="role_farmer_badge">सरल व त्वरित</span>
                     </div>
 
-                    <div class="weed-column-header">
-                        <div class="weed-badge"><i class="fa-solid fa-shield-virus"></i> WEED CLASSIFICATION &amp; CROP DIAGNOSTIC SUITE</div>
-                        <h1 class="gemini-greeting">Weed Detection &amp; Agronomic Triage</h1>
-                        <p class="gemini-subheading">Select crop below to activate dedicated neural attention models and identify field weeds:</p>
+                    <div class="role-card-icon-circle farmer-icon-bg">
+                        <i class="fa-solid fa-tractor"></i>
                     </div>
 
-                    <!-- TWO INTERACTIVE CROP COLUMNS ("Weed ka column bna kr usme se crop choose kre") -->
-                    <div class="weed-crop-grid" id="weed-crop-grid">
+                    <div class="role-card-content">
+                        <h3 class="role-card-title" data-i18n="role_farmer_title">किसान (Farmers)</h3>
+                        <p class="role-card-desc" data-i18n="role_farmer_desc">
+                            साधारण फोटो खींचें, 1 क्लिक में खरपतवार पहचानें और बिना किसी तकनीकी उलझन के तुरंत 5-सूत्रीय वैज्ञानिक कृषि सलाह पाएं।
+                        </p>
                         
-                        <!-- COTTON WEED COLUMN -->
-                        <div class="weed-crop-card active" data-crop="Cotton" id="card-crop-cotton">
-                            <div class="crop-card-top">
-                                <div class="crop-card-badge-row">
-                                    <span class="crop-family-tag"><i class="fa-solid fa-feather-pointed"></i> Malvaceae</span>
-                                    <span class="crop-acc-chip">97.6% Acc &bull; Vision Mamba</span>
-                                </div>
-                                <div class="crop-card-title-wrap">
-                                    <h3>Cotton Crop Weeds (कपास)</h3>
-                                    <span class="crop-scientific">Gossypium hirsutum L.</span>
-                                </div>
-                            </div>
-                            
-                            <p class="crop-card-desc">Vision Mamba state-space neural models trained to differentiate healthy cotton foliage from 12 aggressive broadleaf &amp; grassy field weeds.</p>
-                            
-                            <div class="crop-card-weeds-box">
-                                <span class="weeds-box-title"><i class="fa-solid fa-list-check"></i> 13 Target Flora Classes:</span>
-                                <div class="weed-flora-tags">
-                                    <span class="flora-pill safe"><i class="fa-solid fa-circle-check"></i> Cotton (Healthy)</span>
-                                    <span class="flora-pill">Bermuda Grass (Doob)</span>
-                                    <span class="flora-pill">Purple Nutsedge (Motha)</span>
-                                    <span class="flora-pill">Morning Glory</span>
-                                    <span class="flora-pill">Slender Amaranth</span>
-                                    <span class="flora-pill">Carpetweed</span>
-                                    <span class="flora-pill">Jungle Rice</span>
-                                    <span class="flora-pill">+6 More</span>
-                                </div>
-                            </div>
-                            
-                            <div class="crop-card-footer">
-                                <button class="crop-choose-btn active" data-crop="Cotton">
-                                    <i class="fa-solid fa-circle-check"></i> Selected: Cotton Weeds
-                                </button>
+                        <ul class="role-feature-list">
+                            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="farmer_feat_1">सीधा कैमरा या गैलरी से 1-क्लिक फोटो</span></li>
+                            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="farmer_feat_2">कपास एवं मक्का की सर्वश्रेष्ठ मॉडल से जांच</span></li>
+                            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="farmer_feat_3">5-सूत्रीय त्वरित व व्यावहारिक रासायनिक सलाह</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="role-card-action">
+                        <button class="role-enter-btn farmer-btn" id="btn-enter-farmer">
+                            <span data-i18n="btn_enter_farmer">किसान पोर्टल शुरू करें</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CARD 2: TECHNICAL EXPERT (तकनीकी विशेषज्ञ) -->
+                <div class="role-selection-card role-expert" id="select-role-expert">
+                    <div class="role-card-glow"></div>
+                    <div class="role-card-badge expert-badge">
+                        <i class="fa-solid fa-microchip"></i>
+                        <span data-i18n="role_expert_badge">अनुसंधान एवं विश्लेषण</span>
+                    </div>
+
+                    <div class="role-card-icon-circle expert-icon-bg">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+
+                    <div class="role-card-content">
+                        <h3 class="role-card-title" data-i18n="role_expert_title">तकनीकी विशेषज्ञ (Technical Expert)</h3>
+                        <p class="role-card-desc" data-i18n="role_expert_desc">
+                            Vision Mamba और CBAM अटेंशन डीप लर्निंग मॉडल्स, मॉडल बेंचमार्क लीडरबोर्ड, FLOPs एवं विस्तृत न्यूरल आर्किटेक्चर विश्लेषण।
+                        </p>
+                        
+                        <ul class="role-feature-list">
+                            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="expert_feat_1">11 स्टेट-ऑफ-द-आर्ट डीप लर्निंग मॉडल</span></li>
+                            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="expert_feat_2">तुलनात्मक सटीकता एवं लीडरबोर्ड मेट्रिक्स</span></li>
+                            <li><i class="fa-solid fa-circle-check"></i> <span data-i18n="expert_feat_3">इंटरैक्टिव चैट एवं वैज्ञानिक डायग्नोस्टिक कंसोल</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="role-card-action">
+                        <button class="role-enter-btn expert-btn" id="btn-enter-expert">
+                            <span data-i18n="btn_enter_expert">रिसर्च कंसोल खोलें</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Academic Credit -->
+            <div class="landing-footer-note">
+                <span><i class="fa-solid fa-shield-halved"></i> AgroweedNet &bull; Indira Gandhi University, Meerpur (Rewari) &bull; Hybrid Vision Mamba &amp; CBAM Attention Core</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- ============================================================
+         3. VIEW 2: FARMER PORTAL (COTTON & CORN PHOTOGRAPHIC HUB)
+         ============================================================ -->
+    <main class="portal-view" id="view-farmer" style="display: none;">
+        <div class="farmer-hub-container">
+            
+            <!-- Farmer Portal Header Row -->
+            <div class="farmer-header-bar">
+                <button class="farmer-back-btn" id="farmer-back-to-home-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span data-i18n="farmer_back_btn">मुख्य पृष्ठ पर लौटें</span>
+                </button>
+                <div class="farmer-header-title-box">
+                    <h2 class="farmer-section-title" data-i18n="farmer_select_crop_title">अपनी फसल का चयन करें</h2>
+                    <p class="farmer-section-sub" data-i18n="farmer_select_crop_sub">खरपतवार की जांच के लिए नीचे अपनी फसल पर क्लिक करें:</p>
+                </div>
+            </div>
+
+            <!-- TWO LARGE PHOTOGRAPHIC CROP CARDS -->
+            <div class="farmer-crop-cards-grid">
+                
+                <!-- CROP 1: COTTON (कपास) -->
+                <div class="farmer-crop-card" id="farmer-card-cotton" data-crop="Cotton" tabindex="0">
+                    <div class="farmer-card-img-wrapper">
+                        <img src="/samples/cotton_leaf.jpg" alt="Cotton Crop Leaf" class="farmer-crop-photo">
+                        <div class="farmer-card-overlay-badge">
+                            <i class="fa-solid fa-feather-pointed"></i>
+                            <span data-i18n="cotton_badge">कपास (Cotton)</span>
+                        </div>
+                        <div class="farmer-click-hint">
+                            <i class="fa-solid fa-camera"></i>
+                            <span data-i18n="click_to_scan">जांच के लिए क्लिक करें</span>
+                        </div>
+                    </div>
+                    
+                    <div class="farmer-crop-details">
+                        <div class="farmer-crop-name-row">
+                            <h3 class="crop-h3-name" data-i18n="cotton_name">कपास (Cotton)</h3>
+                            <span class="crop-sci-name">Gossypium hirsutum L.</span>
+                        </div>
+                        
+                        <div class="farmer-crop-stats">
+                            <span class="stat-pill"><i class="fa-solid fa-shield-virus"></i> <span data-i18n="cotton_weeds_count">13 खरपतवार किस्में</span></span>
+                            <span class="stat-pill champ"><i class="fa-solid fa-crown"></i> <span data-i18n="cotton_champ_acc">97.6% शुद्धता (Champion)</span></span>
+                        </div>
+
+                        <p class="farmer-crop-brief" data-i18n="cotton_brief">
+                            कपास की फसल में होने वाले चौड़ी एवं संकरी पत्ती वाले 12 प्रमुख खरपतवारों की स्वचालित पहचान।
+                        </p>
+
+                        <button class="farmer-card-cta-btn" data-crop="Cotton">
+                            <i class="fa-solid fa-camera"></i>
+                            <span data-i18n="btn_scan_cotton">कपास की फोटो जांचें</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CROP 2: CORN (मक्का) -->
+                <div class="farmer-crop-card" id="farmer-card-corn" data-crop="Corn" tabindex="0">
+                    <div class="farmer-card-img-wrapper">
+                        <img src="/samples/corn_leaf.jpg" alt="Corn Crop Leaf" class="farmer-crop-photo">
+                        <div class="farmer-card-overlay-badge corn-badge">
+                            <i class="fa-solid fa-seedling"></i>
+                            <span data-i18n="corn_badge">मक्का (Corn / Maize)</span>
+                        </div>
+                        <div class="farmer-click-hint">
+                            <i class="fa-solid fa-camera"></i>
+                            <span data-i18n="click_to_scan">जांच के लिए क्लिक करें</span>
+                        </div>
+                    </div>
+                    
+                    <div class="farmer-crop-details">
+                        <div class="farmer-crop-name-row">
+                            <h3 class="crop-h3-name" data-i18n="corn_name">मक्का (Corn / Maize)</h3>
+                            <span class="crop-sci-name">Zea mays L.</span>
+                        </div>
+                        
+                        <div class="farmer-crop-stats">
+                            <span class="stat-pill"><i class="fa-solid fa-shield-virus"></i> <span data-i18n="corn_weeds_count">5 खरपतवार किस्में</span></span>
+                            <span class="stat-pill champ"><i class="fa-solid fa-crown"></i> <span data-i18n="corn_champ_acc">99.8% शुद्धता (Champion)</span></span>
+                        </div>
+
+                        <p class="farmer-crop-brief" data-i18n="corn_brief">
+                            मक्का की फसल में उगने वाले घासकुल एवं काष्ठीय खरपतवारों की उच्च सटीकता से पहचान।
+                        </p>
+
+                        <button class="farmer-card-cta-btn" data-crop="Corn">
+                            <i class="fa-solid fa-camera"></i>
+                            <span data-i18n="btn_scan_corn">मक्का की फोटो जांचें</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Farmer Help Banner -->
+            <div class="farmer-tips-banner">
+                <div class="tip-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                <div class="tip-content">
+                    <strong data-i18n="farmer_tip_title">किसान भाइयों के लिए सुझाव:</strong>
+                    <p data-i18n="farmer_tip_body">अच्छी धूप में पौधे या खरपतवार की पत्ती की साफ और नजदीक से फोटो लें। मिट्टी, पत्थर या फल की फोटो न लें ताकि मॉडल बिल्कुल सटीक परिणाम दे सके।</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ============================================================
+         4. FARMER UPLOAD MODAL (CAMERA OR GALLERY SELECTION POPUP)
+         ============================================================ -->
+    <div class="modal-backdrop" id="farmer-upload-modal" style="display: none;">
+        <div class="modal-card farmer-upload-card">
+            
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <div class="farmer-crop-modal-icon" id="farmer-modal-crop-icon">🌿</div>
+                    <div>
+                        <h3 id="farmer-upload-modal-title">कपास खरपतवार की फोटो दें</h3>
+                        <p id="farmer-upload-modal-sub">कैमरा से फोटो खींचें या गैलरी से चुनें</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="close-farmer-upload-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body">
+                
+                <!-- Camera stream container (if camera is active) -->
+                <div class="farmer-camera-container" id="farmer-camera-container" style="display: none;">
+                    <video id="farmer-camera-video" autoplay playsinline></video>
+                    <canvas id="farmer-camera-canvas" style="display: none;"></canvas>
+                    <div class="farmer-camera-controls">
+                        <button class="farmer-snap-btn" id="farmer-camera-snap-btn" title="Take Snapshot">
+                            <i class="fa-solid fa-circle-dot"></i> <span data-i18n="snap_btn">फोटो खींचें</span>
+                        </button>
+                        <button class="farmer-cam-cancel-btn" id="farmer-camera-cancel-btn" title="Cancel Camera">
+                            <i class="fa-solid fa-xmark"></i> <span data-i18n="cancel_btn">रद्द करें</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Normal Upload Selection Buttons -->
+                <div class="farmer-upload-actions-grid" id="farmer-upload-buttons-view">
+                    
+                    <!-- Hidden native file input -->
+                    <input type="file" id="farmer-native-file-input" accept="image/*" style="display: none;">
+                    
+                    <!-- Option 1: Live Camera -->
+                    <button class="farmer-action-choice-btn camera-btn" id="farmer-choice-cam-btn">
+                        <div class="choice-icon-wrap"><i class="fa-solid fa-camera"></i></div>
+                        <div class="choice-text-wrap">
+                            <h4 data-i18n="choice_cam_title">कैमरा से फोटो खींचें</h4>
+                            <span data-i18n="choice_cam_sub">मोबाइल या वेबकैम से लाइव फोटो लें</span>
+                        </div>
+                    </button>
+
+                    <!-- Option 2: Gallery / Files -->
+                    <button class="farmer-action-choice-btn gallery-btn" id="farmer-choice-file-btn">
+                        <div class="choice-icon-wrap"><i class="fa-solid fa-images"></i></div>
+                        <div class="choice-text-wrap">
+                            <h4 data-i18n="choice_file_title">गैलरी / फ़ाइल से चुनें</h4>
+                            <span data-i18n="choice_file_sub">अपने फोन या कंप्यूटर से फोटो अपलोड करें</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Drag and Drop Dropzone -->
+                <div class="farmer-dropzone" id="farmer-modal-dropzone">
+                    <i class="fa-solid fa-cloud-arrow-up drop-icon"></i>
+                    <h5 data-i18n="dropzone_text">या फोटो को यहाँ खींच कर छोड़ें</h5>
+                    <p data-i18n="dropzone_sub">PNG, JPG, या JPEG समर्थित</p>
+                </div>
+
+                <!-- 1-Click Quick Demo Specimen Chips for Instant Testing -->
+                <div class="farmer-demo-bar">
+                    <span class="demo-label" data-i18n="demo_label"><i class="fa-solid fa-flask"></i> 1-क्लिक डेमो टेस्ट:</span>
+                    <div class="demo-chips">
+                        <button class="farmer-demo-chip" id="farmer-demo-weed-btn" data-sample="/samples/weed_specimen.jpg">
+                            <i class="fa-solid fa-shield-virus"></i> <span data-i18n="demo_weed">खरपतवार नमूना</span>
+                        </button>
+                        <button class="farmer-demo-chip" id="farmer-demo-crop-btn" data-sample="/samples/cotton_leaf.jpg">
+                            <i class="fa-solid fa-leaf"></i> <span data-i18n="demo_crop">स्वस्थ फसल पत्ती</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Scanning / Analyzing State Overlay (appears when image is selected) -->
+                <div class="farmer-analyzing-overlay" id="farmer-analyzing-state" style="display: none;">
+                    <div class="scanning-laser-box">
+                        <img id="farmer-analyzing-preview-img" src="" alt="Specimen Preview">
+                        <div class="laser-beam"></div>
+                    </div>
+                    <div class="analyzing-text-wrap">
+                        <div class="spinner-ring"></div>
+                        <h4 data-i18n="analyzing_title">कृत्रिम बुद्धिमत्ता (AI) विश्लेषण जारी है...</h4>
+                        <p id="farmer-analyzing-sub">सर्वश्रेष्ठ चैंपियन मॉडल द्वारा खरपतवार की जांच की जा रही है</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         5. FARMER DIAGNOSIS RESULT POPUP & 5-POINT ACTIONABLE ADVICE
+         ============================================================ -->
+    <div class="modal-backdrop" id="farmer-result-modal" style="display: none;">
+        <div class="modal-card farmer-result-card">
+            
+            <div class="modal-header result-modal-header">
+                <div class="modal-title-wrap">
+                    <img src="/igu_seal.png?v=3" alt="IGU" class="modal-univ-seal">
+                    <div>
+                        <h3 data-i18n="result_modal_title">खरपतवार निदान एवं प्रबंधन रिपोर्ट</h3>
+                        <p data-i18n="result_modal_sub">Indira Gandhi University, Meerpur &bull; AI Diagnosis</p>
+                    </div>
+                </div>
+                <button class="modal-close-btn" id="close-farmer-result-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="modal-body farmer-result-body">
+                
+                <!-- TOP RESULT HERO BANNER -->
+                <div class="result-hero-box" id="farmer-result-hero">
+                    <div class="result-img-column">
+                        <img id="farmer-result-specimen-img" src="/samples/weed_specimen.jpg" alt="Scanned Leaf" class="result-specimen-thumb">
+                        <div class="result-crop-tag" id="farmer-result-crop-badge">🌿 कपास (Cotton)</div>
+                    </div>
+
+                    <div class="result-details-column">
+                        <div class="result-risk-badge" id="farmer-result-risk-badge">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span id="farmer-result-risk-text">गंभीर खरपतवार</span>
+                        </div>
+
+                        <h2 class="result-weed-title" id="farmer-result-weed-name">दूब घास (Bermuda Grass)</h2>
+                        <span class="result-weed-sci" id="farmer-result-sci-name">Cynodon dactylon (L.) Pers.</span>
+                        
+                        <div class="result-metric-pills">
+                            <span class="metric-pill confidence" id="farmer-result-conf-pill">
+                                <i class="fa-solid fa-bullseye"></i> <span id="farmer-result-conf-text">99.4% सटीकता</span>
+                            </span>
+                            <span class="metric-pill champion" id="farmer-result-model-pill">
+                                <i class="fa-solid fa-crown"></i> InceptionV3 Vision Mamba
+                            </span>
+                        </div>
+
+                        <p class="result-summary-text" id="farmer-result-summary-text">
+                            यह एक तेजी से फैलने वाला बारहमासी घासकुल खरपतवार है जो कपास की जड़ों से नमी और पोषक तत्व खींचकर फसल की पैदावार घटाता है।
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 5-POINT FORMAL ACTIONABLE AGRONOMIC ADVICE BOX -->
+                <div class="farmer-5point-advice-section">
+                    <div class="advice-section-header">
+                        <div class="advice-header-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                        <div>
+                            <h3 class="advice-h3" data-i18n="advice_heading">5-सूत्रीय त्वरित वैज्ञानिक कृषि सलाह</h3>
+                            <p class="advice-sub" data-i18n="advice_sub">किसान भाइयों के लिए तुरंत लागू करने योग्य सटीक कदम:</p>
+                        </div>
+                    </div>
+
+                    <div class="advice-5cards-grid" id="farmer-advice-cards-container">
+                        
+                        <!-- Point 1: Chemical Treatment & Dosage -->
+                        <div class="advice-step-card">
+                            <div class="step-num">1</div>
+                            <div class="step-icon chem-icon"><i class="fa-solid fa-flask-vial"></i></div>
+                            <div class="step-body">
+                                <h4 class="step-title" data-i18n="step1_title">अनुशंसित शाकनाशी एवं सही मात्रा</h4>
+                                <p class="step-desc" id="advice-point-1">क्विजालोफॉप-इथाइल 5% EC (Quizalofop-ethyl) की 350-400 मिलीलीटर मात्रा प्रति एकड़ प्रयोग करें।</p>
                             </div>
                         </div>
 
-                        <!-- CORN WEED COLUMN -->
-                        <div class="weed-crop-card" data-crop="Corn" id="card-crop-corn">
-                            <div class="crop-card-top">
-                                <div class="crop-card-badge-row">
-                                    <span class="crop-family-tag"><i class="fa-solid fa-seedling"></i> Poaceae</span>
-                                    <span class="crop-acc-chip">99.8% Acc &bull; CBAM Attention</span>
-                                </div>
-                                <div class="crop-card-title-wrap">
-                                    <h3>Corn / Maize Weeds (मक्का)</h3>
-                                    <span class="crop-scientific">Zea mays L.</span>
-                                </div>
+                        <!-- Point 2: Optimal Spraying Window -->
+                        <div class="advice-step-card">
+                            <div class="step-num">2</div>
+                            <div class="step-icon time-icon"><i class="fa-solid fa-clock"></i></div>
+                            <div class="step-body">
+                                <h4 class="step-title" data-i18n="step2_title">छिड़काव का सही समय एवं अवस्था</h4>
+                                <p class="step-desc" id="advice-point-2">खरपतवार की 2 से 4 पत्ती अवस्था (सक्रिय बढ़वार) पर जब खेत में पर्याप्त नमी हो, तभी छिड़काव करें।</p>
                             </div>
-                            
-                            <p class="crop-card-desc">Dual Spatial &amp; Channel Attention (CBAM) models calibrated for maize canopy foliage and competitive annual weed identification.</p>
-                            
-                            <div class="crop-card-weeds-box">
-                                <span class="weeds-box-title"><i class="fa-solid fa-list-check"></i> 5 Target Flora Classes:</span>
-                                <div class="weed-flora-tags">
-                                    <span class="flora-pill safe"><i class="fa-solid fa-circle-check"></i> Corn Foliage</span>
-                                    <span class="flora-pill">Bluegrass</span>
-                                    <span class="flora-pill">Common Buckwheat</span>
-                                    <span class="flora-pill">Fall Panicgrass</span>
-                                    <span class="flora-pill">Large Crabgrass / Thistle</span>
-                                </div>
+                        </div>
+
+                        <!-- Point 3: Cultural & Mechanical Practice -->
+                        <div class="advice-step-card">
+                            <div class="step-num">3</div>
+                            <div class="step-icon mech-icon"><i class="fa-solid fa-trowel"></i></div>
+                            <div class="step-body">
+                                <h4 class="step-title" data-i18n="step3_title">सस्य एवं यांत्रिक नियंत्रण</h4>
+                                <p class="step-desc" id="advice-point-3">कतारों के बीच उथली निराई-गुड़ाई (व्हील-हो अथवा कल्टीवेटर) से जड़ों को उखाड़कर धूप में सूखने दें।</p>
                             </div>
-                            
-                            <div class="crop-card-footer">
-                                <button class="crop-choose-btn" data-crop="Corn">
-                                    <i class="fa-regular fa-circle"></i> Select Corn Weeds
-                                </button>
+                        </div>
+
+                        <!-- Point 4: Spray Technique & Water Volume -->
+                        <div class="advice-step-card">
+                            <div class="step-num">4</div>
+                            <div class="step-icon spray-icon"><i class="fa-solid fa-spray-can"></i></div>
+                            <div class="step-body">
+                                <h4 class="step-title" data-i18n="step4_title">छिड़काव तकनीक एवं पानी की मात्रा</h4>
+                                <p class="step-desc" id="advice-point-4">फ्लैट-फैन या फ्लड-जेट नोजल का प्रयोग करें। प्रति एकड़ कम से कम 150-200 लीटर साफ पानी में घोल बनाएं।</p>
+                            </div>
+                        </div>
+
+                        <!-- Point 5: Safety & Preventive Scouting -->
+                        <div class="advice-step-card">
+                            <div class="step-num">5</div>
+                            <div class="step-icon safe-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="step-body">
+                                <h4 class="step-title" data-i18n="step5_title">सुरक्षा एवं अगली फसल चक्र सावधानी</h4>
+                                <p class="step-desc" id="advice-point-5">बीज बनने से पहले खरपतवार नष्ट करें तथा शाकनाशी प्रतिरोध से बचने हेतु विभिन्न वर्ग के रसायनों का चक्र अपनाएं।</p>
                             </div>
                         </div>
 
                     </div>
+                </div>
 
-                    <!-- DIRECT SPECIMEN SCAN CONSOLE ON MAIN PAGE ("bahr page pr") -->
-                    <div class="direct-scan-console" id="direct-scan-console">
-                        <div class="console-header-line">
-                            <div class="console-target-info">
-                                <span class="console-target-label">Current Weed Target:</span>
-                                <strong class="console-target-name" id="console-target-display">🌿 Cotton Weeds &bull; InceptionV3 + Vision Mamba</strong>
-                            </div>
-                            <button class="console-cam-btn" id="direct-cam-btn" title="Open Live Camera">
-                                <i class="fa-solid fa-camera"></i> Live Camera
+                <!-- Action Footer -->
+                <div class="result-action-footer">
+                    <button class="result-act-btn secondary" id="farmer-result-rescan-btn">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span data-i18n="btn_rescan">अन्य पत्ती की जांच करें</span>
+                    </button>
+                    <button class="result-act-btn primary" id="farmer-result-home-btn">
+                        <i class="fa-solid fa-house"></i>
+                        <span data-i18n="btn_back_home">मुख्य पृष्ठ पर जाएं</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         6. VIEW 3: TECHNICAL EXPERT CONSOLE (PRESERVED FULL INTERFACE)
+         ============================================================ -->
+    <div class="portal-view" id="view-expert" style="display: none; height: calc(100vh - 65px); overflow: hidden;">
+        <div class="chat-app-container">
+            
+            <!-- SIDEBAR BACKDROP OVERLAY FOR MOBILE -->
+            <div class="sidebar-mobile-backdrop" id="sidebar-backdrop"></div>
+            
+            <!-- SIDEBAR (Collapsible, dark background like ChatGPT) -->
+            <aside class="chat-sidebar" id="sidebar">
+                <div class="sidebar-univ-brand">
+                    <img src="/igu_seal.png?v=3" alt="IGU Emblem" class="sidebar-univ-seal">
+                    <div class="sidebar-univ-info">
+                        <span class="sidebar-brand-title">AgroweedNet</span>
+                        <span class="sidebar-brand-sub">IGU Meerpur &bull; Research</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-header">
+                    <button class="new-chat-btn" id="new-diagnosis-btn">
+                        <i class="fa-solid fa-plus"></i> New Diagnosis
+                    </button>
+                    <button class="sidebar-toggle-btn" id="close-sidebar-btn" title="Close Sidebar">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </button>
+                </div>
+
+                <!-- Sidebar Crop / Weed Suite Selector -->
+                <div class="sidebar-crop-section">
+                    <span class="sidebar-crop-label"><i class="fa-solid fa-shield-virus"></i> Weed Target Crop</span>
+                    <div class="sidebar-crop-pills">
+                        <button class="sidebar-crop-pill active" data-crop="Cotton" id="sidebar-crop-cotton">
+                            <i class="fa-solid fa-feather-pointed"></i> Cotton (13 Weeds)
+                        </button>
+                        <button class="sidebar-crop-pill" data-crop="Corn" id="sidebar-crop-corn">
+                            <i class="fa-solid fa-seedling"></i> Corn (5 Weeds)
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Chat History / Previous scans list -->
+                <div class="sidebar-history-container">
+                    <span class="history-label">Recent Diagnosis Scans</span>
+                    <div class="history-list" id="history-scans-list">
+                        <div class="history-item empty">
+                            <i class="fa-solid fa-message-medical"></i> No recent scans
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Bottom Profile / Theme toggle -->
+                <div class="sidebar-footer">
+                    <div class="user-profile">
+                        <div class="avatar-univ-wrap">
+                            <img src="/igu_seal.png?v=3" alt="IGU" class="avatar-univ-img">
+                        </div>
+                        <div class="user-info">
+                            <span class="username">Scholar AY</span>
+                            <span class="user-role">IGU Meerpur &bull; Research</span>
+                        </div>
+                    </div>
+                    <button class="footer-action-btn" id="theme-toggle" title="Toggle Dark/Light Mode">
+                        <i class="fa-solid fa-sun"></i>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- MAIN CHAT CONTAINER -->
+            <main class="chat-main-viewport" id="chat-viewport">
+                
+                <!-- Drag & Drop Floating Overlay -->
+                <div class="drag-drop-overlay" id="drag-drop-overlay" style="display: none;">
+                    <div class="drag-drop-box">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <h3>Drop Leaf Specimen here to Scan</h3>
+                        <p>Supports PNG, JPG, or JPEG images</p>
+                    </div>
+                </div>
+                
+                <!-- TOP CONTROLS ROW -->
+                <header class="chat-top-header">
+                    <div class="header-left">
+                        <button class="sidebar-open-btn" id="open-sidebar-btn" title="Open Sidebar">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                        
+                        <!-- Header Weed Crop Selector -->
+                        <div class="header-crop-selector" id="header-crop-selector">
+                            <span class="crop-sel-label"><i class="fa-solid fa-leaf"></i> Crop:</span>
+                            <button class="crop-header-btn active" data-crop="Cotton" id="header-btn-cotton" title="Select Cotton Weed Suite (13 Classes)">
+                                <i class="fa-solid fa-feather-pointed"></i> Cotton (13)
+                            </button>
+                            <button class="crop-header-btn" data-crop="Corn" id="header-btn-corn" title="Select Corn Weed Suite (5 Classes)">
+                                <i class="fa-solid fa-seedling"></i> Corn (5)
                             </button>
                         </div>
 
-                        <!-- Dropzone Box on main page -->
-                        <div class="direct-dropzone" id="direct-dropzone">
-                            <input type="file" id="direct-file-input" accept="image/png,image/jpeg,image/jpg" style="display: none;">
-                            <div class="dropzone-inner">
-                                <div class="dropzone-icon-ring">
-                                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                                </div>
-                                <h4>Drop Leaf Specimen to Scan Weeds</h4>
-                                <p>Drag &amp; drop leaf photo here, or <span class="browse-link">browse files</span></p>
-                                <div class="dropzone-hints">
-                                    <span><i class="fa-solid fa-check"></i> Field Leaves &amp; Seedlings</span>
-                                    <span><i class="fa-solid fa-ban"></i> Fruits/Non-Plants Blocked</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 1-Click Quick Demo Tests -->
-                        <div class="quick-test-bar">
-                            <span class="quick-test-label"><i class="fa-solid fa-flask"></i> 1-Click Demo Tests:</span>
-                            <div class="quick-test-chips">
-                                <button class="test-chip-btn" data-sample="/samples/weed_specimen.jpg" data-crop="Cotton" title="Test authentic field weed on soil">
-                                    <i class="fa-solid fa-shield-virus"></i> Test Weed Specimen
-                                </button>
-                                <button class="test-chip-btn" data-sample="/samples/cotton_leaf.jpg" data-crop="Cotton" title="Test healthy cotton crop leaf">
-                                    <i class="fa-solid fa-feather-pointed"></i> Test Cotton Leaf
-                                </button>
-                                <button class="test-chip-btn" data-sample="/samples/corn_leaf.jpg" data-crop="Corn" title="Test maize corn leaf">
-                                    <i class="fa-solid fa-seedling"></i> Test Corn Leaf
-                                </button>
-                                <button class="test-chip-btn reject-demo" data-sample="/samples/fruit_rejection.jpg" data-crop="Cotton" title="Demonstrate botanical fruit rejection">
-                                    <i class="fa-solid fa-ban"></i> Test Fruit Rejection (Apple)
-                                </button>
+                        <!-- Model switcher dropdown -->
+                        <div class="model-dropdown-container">
+                            <button class="model-dropdown-trigger" id="model-dropdown-btn" title="Switch Deep Learning Model">
+                                <i class="fa-solid fa-wand-magic-sparkles model-trigger-sparkle"></i>
+                                <span class="model-trigger-name" id="active-model-name">InceptionV3 + Vision Mamba</span>
+                                <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                            </button>
+                            <div class="model-dropdown-menu" id="model-dropdown-menu">
+                                <!-- Dynamic Model options rendered by JS -->
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Messages thread -->
-                <div class="message-thread" id="message-thread" style="display: none;">
-                    <!-- Message items dynamically populated by JS -->
-                </div>
-            </div>
+                    <div class="header-center">
+                        <div class="university-top-badge" id="open-univ-info" title="Indira Gandhi University, Meerpur (Rewari)">
+                            <img src="/igu_seal.png?v=3" alt="IGU Meerpur Seal" class="header-univ-seal">
+                            <span class="univ-name">IGU Meerpur, Rewari</span>
+                        </div>
+                    </div>
 
-            <!-- CHAT BOTTOM PANEL (ChatGPT & Gemini Floating Pill) -->
-            <footer class="chat-input-panel">
-                <div class="input-container-box">
+                    <div class="header-right">
+                        <button class="header-action-btn" id="open-benchmarks-btn" title="View Model Benchmark Leaderboard">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Leaderboard</span>
+                        </button>
+                        <div class="system-status" id="system-status-indicator">
+                            <span class="status-dot pulsing"></span>
+                            <span class="status-text">Vision Core Online</span>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- CHAT CONVERSATION VIEWPORT -->
+                <div class="chat-feed-container" id="chat-feed">
                     
-                    <!-- Image upload thumbnail preview (above the input pill when selected) -->
-                    <div class="selected-image-preview-bar" id="selected-image-bar" style="display: none;">
-                        <div class="preview-thumbnail-box">
-                            <img id="input-image-thumbnail" src="" alt="Thumbnail">
-                            <div class="scanning-laser-line" id="active-laser-line"></div>
-                            <button class="remove-thumbnail-btn" id="clear-selected-image" title="Remove specimen"><i class="fa-solid fa-xmark"></i></button>
+                    <!-- Center Welcome Screen (Weed Diagnostic & Crop Hub) -->
+                    <div class="welcome-screen" id="welcome-screen">
+                        <div class="welcome-univ-pill">
+                            <img src="/igu_seal.png?v=3" alt="IGU Emblem" class="welcome-univ-seal">
+                            <span>Indira Gandhi University, Meerpur &bull; <strong>Department of Computer Science &amp; Agronomy</strong></span>
                         </div>
-                        <div class="preview-info-box">
-                            <span class="preview-filename-text" id="selected-filename">specimen.jpg</span>
-                            <span class="preview-status-text"><i class="fa-solid fa-circle-check"></i> Specimen staged &bull; Ready for inference</span>
+
+                        <div class="weed-column-header">
+                            <div class="weed-badge"><i class="fa-solid fa-shield-virus"></i> WEED CLASSIFICATION &amp; CROP DIAGNOSTIC SUITE</div>
+                            <h1 class="gemini-greeting">Weed Detection &amp; Agronomic Triage</h1>
+                            <p class="gemini-subheading">Select crop below to activate dedicated neural attention models and identify field weeds:</p>
                         </div>
-                    </div>
-                    
-                    <!-- Web camera capture preview overlay (inside main area) -->
-                    <div class="camera-stream-overlay" id="camera-overlay" style="display: none;">
-                        <div class="camera-viewport-box">
-                            <video id="camera-stream" autoplay playsinline></video>
-                            <canvas id="camera-canvas" style="display: none;"></canvas>
-                            <div class="camera-frame-guide"></div>
-                            <div class="camera-floating-controls">
-                                <button class="camera-act-btn" id="capture-snapshot-btn" title="Snap Specimen Image"><i class="fa-solid fa-circle-dot"></i></button>
-                                <button class="camera-act-btn close" id="close-camera-btn" title="Close Camera Feed"><i class="fa-solid fa-xmark"></i></button>
+
+                        <!-- TWO INTERACTIVE CROP COLUMNS -->
+                        <div class="weed-crop-grid" id="weed-crop-grid">
+                            
+                            <!-- COTTON WEED COLUMN -->
+                            <div class="weed-crop-card active" data-crop="Cotton" id="card-crop-cotton">
+                                <div class="crop-card-top">
+                                    <div class="crop-card-badge-row">
+                                        <span class="crop-family-tag"><i class="fa-solid fa-feather-pointed"></i> Malvaceae</span>
+                                        <span class="crop-acc-chip">97.6% Acc &bull; Vision Mamba</span>
+                                    </div>
+                                    <div class="crop-card-title-wrap">
+                                        <h3>Cotton Crop Weeds (कपास)</h3>
+                                        <span class="crop-scientific">Gossypium hirsutum L.</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="crop-card-desc">Vision Mamba state-space neural models trained to differentiate healthy cotton foliage from 12 aggressive broadleaf &amp; grassy field weeds.</p>
+                                
+                                <div class="crop-card-weeds-box">
+                                    <span class="weeds-box-title"><i class="fa-solid fa-list-check"></i> 13 Target Flora Classes:</span>
+                                    <div class="weed-flora-tags">
+                                        <span class="flora-pill safe"><i class="fa-solid fa-circle-check"></i> Cotton (Healthy)</span>
+                                        <span class="flora-pill">Bermuda Grass (Doob)</span>
+                                        <span class="flora-pill">Purple Nutsedge (Motha)</span>
+                                        <span class="flora-pill">Morning Glory</span>
+                                        <span class="flora-pill">Slender Amaranth</span>
+                                        <span class="flora-pill">Carpetweed</span>
+                                        <span class="flora-pill">Jungle Rice</span>
+                                        <span class="flora-pill">+6 More</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="crop-card-footer">
+                                    <button class="crop-choose-btn active" data-crop="Cotton">
+                                        <i class="fa-solid fa-circle-check"></i> Selected: Cotton Weeds
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- CORN WEED COLUMN -->
+                            <div class="weed-crop-card" data-crop="Corn" id="card-crop-corn">
+                                <div class="crop-card-top">
+                                    <div class="crop-card-badge-row">
+                                        <span class="crop-family-tag"><i class="fa-solid fa-seedling"></i> Poaceae</span>
+                                        <span class="crop-acc-chip">99.8% Acc &bull; CBAM Attention</span>
+                                    </div>
+                                    <div class="crop-card-title-wrap">
+                                        <h3>Corn / Maize Weeds (मक्का)</h3>
+                                        <span class="crop-scientific">Zea mays L.</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="crop-card-desc">Dual Spatial &amp; Channel Attention (CBAM) models calibrated for maize canopy foliage and competitive annual weed identification.</p>
+                                
+                                <div class="crop-card-weeds-box">
+                                    <span class="weeds-box-title"><i class="fa-solid fa-list-check"></i> 5 Target Flora Classes:</span>
+                                    <div class="weed-flora-tags">
+                                        <span class="flora-pill safe"><i class="fa-solid fa-circle-check"></i> Corn Foliage</span>
+                                        <span class="flora-pill">Bluegrass</span>
+                                        <span class="flora-pill">Common Lambsquarters</span>
+                                        <span class="flora-pill">Field Thistle</span>
+                                        <span class="flora-pill">Sedge</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="crop-card-footer">
+                                    <button class="crop-choose-btn" data-crop="Corn">
+                                        <i class="fa-regular fa-circle"></i> Select Corn Weeds
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- DIRECT SPECIMEN SCAN CONSOLE ON MAIN PAGE -->
+                        <div class="direct-scan-console" id="direct-scan-console">
+                            <div class="console-header-line">
+                                <div class="console-target-info">
+                                    <span class="console-target-label">Current Weed Target:</span>
+                                    <strong class="console-target-name" id="console-target-display">🌿 Cotton Weeds &bull; InceptionV3 + Vision Mamba</strong>
+                                </div>
+                                <button class="console-cam-btn" id="direct-cam-btn" title="Open Live Camera">
+                                    <i class="fa-solid fa-camera"></i> Live Camera
+                                </button>
+                            </div>
+
+                            <!-- Dropzone Box on main page -->
+                            <div class="direct-dropzone" id="direct-dropzone">
+                                <input type="file" id="direct-file-input" accept="image/png,image/jpeg,image/jpg" style="display: none;">
+                                <div class="dropzone-inner">
+                                    <div class="dropzone-icon-ring">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    </div>
+                                    <h4>Drop Leaf Specimen to Scan Weeds</h4>
+                                    <p>Drag &amp; drop leaf photo here, or <span class="browse-link">browse files</span></p>
+                                    <div class="dropzone-hints">
+                                        <span><i class="fa-solid fa-check"></i> Field Leaves &amp; Seedlings</span>
+                                        <span><i class="fa-solid fa-ban"></i> Fruits/Non-Plants Blocked</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 1-Click Quick Demo Tests -->
+                            <div class="quick-test-bar">
+                                <span class="quick-test-label"><i class="fa-solid fa-flask"></i> 1-Click Demo Tests:</span>
+                                <div class="quick-test-chips">
+                                    <button class="test-chip-btn" data-sample="/samples/weed_specimen.jpg" data-crop="Cotton" title="Test authentic field weed on soil">
+                                        <i class="fa-solid fa-shield-virus"></i> Test Weed Specimen
+                                    </button>
+                                    <button class="test-chip-btn" data-sample="/samples/cotton_leaf.jpg" data-crop="Cotton" title="Test healthy cotton crop leaf">
+                                        <i class="fa-solid fa-feather-pointed"></i> Test Cotton Leaf
+                                    </button>
+                                    <button class="test-chip-btn" data-sample="/samples/corn_leaf.jpg" data-crop="Corn" title="Test maize corn leaf">
+                                        <i class="fa-solid fa-seedling"></i> Test Corn Leaf
+                                    </button>
+                                    <button class="test-chip-btn reject-demo" data-sample="/samples/fruit_rejection.jpg" data-crop="Cotton" title="Demonstrate botanical fruit rejection">
+                                        <i class="fa-solid fa-ban"></i> Test Fruit Rejection (Apple)
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Input Pill -->
-                    <div class="input-pill-bar">
-                        <input type="file" id="file-input" accept="image/*" style="display: none;">
-                        
-                        <!-- Attachment Paperclip -->
-                        <button class="pill-utility-btn" id="attach-file-btn" title="Upload Leaf Specimen">
-                            <i class="fa-solid fa-paperclip"></i>
-                        </button>
-                        
-                        <!-- Camera Button -->
-                        <button class="pill-utility-btn" id="open-camera-btn" title="Take Live Photo">
-                            <i class="fa-solid fa-camera"></i>
-                        </button>
-
-                        <!-- Active Model Chip Indicator inside the input bar -->
-                        <div class="input-crop-badge" id="input-crop-badge" title="Current Active Neural Model">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span id="input-crop-badge-text">Cotton Mamba</span>
-                        </div>
-
-                        <div class="pill-text-area-box">
-                            <input type="text" id="chat-text-input" placeholder="Attach a leaf image or click prompt cards to diagnose..." autocomplete="off">
-                        </div>
-
-                        <!-- Send Button -->
-                        <button class="pill-send-btn" id="send-diagnosis-btn" disabled title="Run Neural Diagnosis">
-                            <i class="fa-solid fa-arrow-up"></i>
-                        </button>
+                    <!-- Messages thread -->
+                    <div class="message-thread" id="message-thread" style="display: none;">
+                        <!-- Message items dynamically populated by JS -->
                     </div>
                 </div>
-                
-                <div class="academic-note-text">
-                    <span><i class="fa-solid fa-shield-halved"></i> AgriShield AI &bull; Indira Gandhi University, Meerpur (Rewari) &bull; Vision Mamba &amp; CBAM Attention Neural Core</span>
-                </div>
-            </footer>
-        </main>
+
+                <!-- CHAT BOTTOM PANEL (ChatGPT & Gemini Floating Pill) -->
+                <footer class="chat-input-panel">
+                    <div class="input-container-box">
+                        
+                        <!-- Image upload thumbnail preview -->
+                        <div class="selected-image-preview-bar" id="selected-image-bar" style="display: none;">
+                            <div class="preview-thumbnail-box">
+                                <img id="input-image-thumbnail" src="" alt="Thumbnail">
+                                <div class="scanning-laser-line" id="active-laser-line"></div>
+                                <button class="remove-thumbnail-btn" id="clear-selected-image" title="Remove specimen"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <div class="preview-info-box">
+                                <span class="preview-filename-text" id="selected-filename">specimen.jpg</span>
+                                <span class="preview-status-text"><i class="fa-solid fa-circle-check"></i> Specimen staged &bull; Ready for inference</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Web camera capture preview overlay -->
+                        <div class="camera-stream-overlay" id="camera-overlay" style="display: none;">
+                            <div class="camera-viewport-box">
+                                <video id="camera-stream" autoplay playsinline></video>
+                                <canvas id="camera-canvas" style="display: none;"></canvas>
+                                <div class="camera-frame-guide"></div>
+                                <div class="camera-floating-controls">
+                                    <button class="camera-act-btn" id="capture-snapshot-btn" title="Snap Specimen Image"><i class="fa-solid fa-circle-dot"></i></button>
+                                    <button class="camera-act-btn close" id="close-camera-btn" title="Close Camera Feed"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Input Pill -->
+                        <div class="input-pill-bar">
+                            <input type="file" id="file-input" accept="image/*" style="display: none;">
+                            
+                            <!-- Attachment Paperclip -->
+                            <button class="pill-utility-btn" id="attach-file-btn" title="Upload Leaf Specimen">
+                                <i class="fa-solid fa-paperclip"></i>
+                            </button>
+                            
+                            <!-- Camera Button -->
+                            <button class="pill-utility-btn" id="open-camera-btn" title="Take Live Photo">
+                                <i class="fa-solid fa-camera"></i>
+                            </button>
+
+                            <!-- Active Model Chip Indicator inside the input bar -->
+                            <div class="input-crop-badge" id="input-crop-badge" title="Current Active Neural Model">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span id="input-crop-badge-text">Cotton Mamba</span>
+                            </div>
+
+                            <div class="pill-text-area-box">
+                                <input type="text" id="chat-text-input" placeholder="Attach a leaf image or click prompt cards to diagnose..." autocomplete="off">
+                            </div>
+
+                            <!-- Send Button -->
+                            <button class="pill-send-btn" id="send-diagnosis-btn" disabled title="Run Neural Diagnosis">
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="academic-note-text">
+                        <span><i class="fa-solid fa-shield-halved"></i> AgroweedNet &bull; Indira Gandhi University, Meerpur (Rewari) &bull; Vision Mamba &amp; CBAM Attention Neural Core</span>
+                    </div>
+                </footer>
+            </main>
+        </div>
     </div>
 
-    <!-- BENCHMARK LEADERBOARD MODAL -->
+    <!-- ============================================================
+         7. BENCHMARK LEADERBOARD MODAL (FOR TECHNICAL EXPERT)
+         ============================================================ -->
     <div class="modal-backdrop" id="leaderboard-modal" style="display: none;">
         <div class="modal-card">
             <div class="modal-header">
                 <div class="modal-title-wrap">
-                    <img src="/igu_seal.png?v=2" alt="IGU Emblem" class="modal-univ-seal">
+                    <img src="/igu_seal.png?v=3" alt="IGU Emblem" class="modal-univ-seal">
                     <div>
                         <h3>Neural Architecture Leaderboard</h3>
                         <p>Indira Gandhi University, Meerpur (Rewari) &bull; Research Evaluation Suite</p>
@@ -482,7 +970,9 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
         </div>
     </div>
+
 </body>
 </html>
