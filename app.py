@@ -897,6 +897,16 @@ def is_valid_leaf_specimen(image):
 def index():
     return send_from_directory(app.static_folder, "index.html")
 
+@app.route("/samples/<path:filename>")
+def serve_samples(filename):
+    return send_from_directory(os.path.join(app.static_folder, "samples"), filename)
+
+@app.after_request
+def set_static_cache_headers(response):
+    if request.path.startswith("/samples/") or request.path.endswith((".jpg", ".jpeg", ".png", ".webp", ".svg", ".css", ".js")):
+        response.headers["Cache-Control"] = "public, max-age=86400"
+    return response
+
 @app.route("/api/models", methods=["GET"])
 def get_models():
     """
